@@ -1,9 +1,6 @@
 package kmdb.movies_api.actor;
 
-import com.fasterxml.jackson.annotation.JsonTypeId;
 import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-
 import java.time.LocalDate;
 
 @Entity
@@ -27,11 +24,11 @@ public class Actor {
     public Actor() {
     }
 
-    public Actor(Long id, String name, LocalDate birthDate) {
+/*    public Actor(Long id, String name, LocalDate birthDate) {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
-    }
+    }*/
 
     public Actor(String name, LocalDate birthDate) {
         this.name = name;

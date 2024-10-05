@@ -3,11 +3,12 @@ package kmdb.movies_api.actor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 
 @RestController
-@RequestMapping(path = "api/v1/actor")
+@RequestMapping(path = "api/actors")
 public class ActorController {
 
     private final ActorService actorService;
@@ -17,9 +18,16 @@ public class ActorController {
         this.actorService = actorService;
     }
 
-    @GetMapping // retrieve data
-    public List<Actor> getActors() {
-        return actorService.getActors();
+
+    @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
+    public Optional<Actor> getActorsById(
+            @PathVariable("actorId") Long actorId) {
+        return actorService.getActorsById(actorId);
+    }
+
+    @GetMapping //retrieve data by name or retrieve all if a parameter isn't given
+    public List<Actor> findActorsByName(@RequestParam(required = false) String name) {
+        return actorService.findActorsByName(name);
     }
 
     @PostMapping // add data
@@ -27,17 +35,27 @@ public class ActorController {
         actorService.addActor(actor);
     }
 
-    @DeleteMapping(path = "{actorId}")
+    @DeleteMapping(path = "{actorId}") // delete data by id
     public void deleteActor(
             @PathVariable("actorId") Long actorId) {
         actorService.deleteActor(actorId);
     }
 
-    @PutMapping(path = "{actorId}")
+    @PatchMapping(path = "{actorId}") // modify data by id
     public void updateActor(
             @PathVariable("actorId") Long actorId,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) LocalDate birthDate) {
-        actorService.updateActor(actorId, name, birthDate);
+
+           // modifying via body
+            @RequestBody Actor request) {
+        actorService.updateActor(actorId, request.getName(), request.getBirthDate());
+        actorService.updateActor(actorId, request.getName(), request.getBirthDate());
     }
-}
+            // modifying via parameters
+/*
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate) {
+*/
+
+    }
+
+
