@@ -1,4 +1,4 @@
-package kmdb.movies_api.actor;
+package kmdb.movies_api.actors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +53,7 @@ public class ActorController {
             // modifying via parameters
 /*
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate)) {
 */
 
     }

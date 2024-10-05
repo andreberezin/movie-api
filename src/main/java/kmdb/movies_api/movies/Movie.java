@@ -1,4 +1,4 @@
-package kmdb.movies_api.movie;
+package kmdb.movies_api.movies;
 
 public class Movie {
     private Long id;

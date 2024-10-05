@@ -1,4 +1,4 @@
-package kmdb.movies_api.actor;
+package kmdb.movies_api.actors;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
