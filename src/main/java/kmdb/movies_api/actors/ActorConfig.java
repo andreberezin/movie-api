@@ -11,20 +11,20 @@ import java.util.List;
 public class ActorConfig {
 
     @Bean
-        CommandLineRunner commandLineRunner(ActorRepository repository) {
+        CommandLineRunner commandLineRunnerActor(ActorRepository actorRepository) {
             return args -> {
-                Actor SteveCarell = new Actor(
+                Actor actor1 = new Actor(
                         "Steve Carell",
                         LocalDate.of(1962, 8, 16)
                 );
 
-                Actor RobertDeNiro = new Actor(
+                Actor actor2 = new Actor(
                         "Robert De Niro",
                         LocalDate.of(1943, 8, 17)
                 );
 
-                repository.saveAll(
-                        List.of(SteveCarell, RobertDeNiro)
+                actorRepository.saveAll(
+                        List.of(actor1, actor2)
                 );
             };
         }
