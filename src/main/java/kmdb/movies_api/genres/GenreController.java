@@ -1,10 +1,12 @@
 package kmdb.movies_api.genres;
 
 
+import kmdb.movies_api.actors.Actor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/genres")
@@ -17,9 +19,20 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-    @GetMapping
+/*    @GetMapping
     public List<Genre> getAllGenres() {
         return genreService.getAllGenres();
+    }*/
+
+    @GetMapping(path = "{genreId}")
+    public Optional<Genre> getGenreById(
+            @PathVariable Long genreId) {
+        return genreService.getGenreById(genreId);
+    }
+
+    @GetMapping
+    public List<Genre> findGenresByName(@RequestParam(required = false) String name) {
+        return genreService.findGenresByName(name);
     }
 
     @PostMapping
@@ -33,12 +46,12 @@ public class GenreController {
         genreService.deleteGenre(genreId);
     }
 
-/*    @PatchMapping(path = "{genreId}")
+    @PatchMapping(path = "{genreId}")
     public void updateGenre(
-            @PathVariable("GenreId") Long genreId,
+            @PathVariable("genreId") Long genreId,
             @RequestBody Genre request) {
         genreService.updateGenre(genreId, request.getName());
-        genreService.updateGenre(genreId, request.getName());
-    }*/
+        //genreService.updateGenre(genreId, request.getName());
+    }
 
 }

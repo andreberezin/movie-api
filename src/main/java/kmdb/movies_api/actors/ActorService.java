@@ -24,7 +24,7 @@ public class ActorService {
         return actorRepository.findAll();
     }*/
 
-    public Optional<Actor> getActorsById(Long actorId) {
+    public Optional<Actor> getActorById(Long actorId) {
 
         boolean exists = actorRepository.existsById(actorId);
         if(!exists) {

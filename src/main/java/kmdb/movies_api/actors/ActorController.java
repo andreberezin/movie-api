@@ -22,7 +22,7 @@ public class ActorController {
     @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
     public Optional<Actor> getActorsById(
             @PathVariable("actorId") Long actorId) {
-        return actorService.getActorsById(actorId);
+        return actorService.getActorById(actorId);
     }
 
     @GetMapping //retrieve data by name or retrieve all if a parameter isn't given
