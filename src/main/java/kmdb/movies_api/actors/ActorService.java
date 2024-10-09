@@ -1,6 +1,7 @@
 package kmdb.movies_api.actors;
 
 import jakarta.transaction.Transactional;
+import kmdb.movies_api.exception.ApiRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,7 @@ public class ActorService {
 
         boolean exists = actorRepository.existsById(actorId);
         if(!exists) {
-            throw new IllegalStateException(
-                    "Actor with id " + actorId + " does not exist in database");
+            throw new ApiRequestException("Actor with id " + actorId + " does not exist");
         }
 
        return actorRepository.findById(actorId);

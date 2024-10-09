@@ -48,7 +48,6 @@ public class ActorController {
            // modifying via body
             @RequestBody Actor request) {
         actorService.updateActor(actorId, request.getName(), request.getBirthDate());
-        actorService.updateActor(actorId, request.getName(), request.getBirthDate());
     }
             // modifying via parameters
 /*

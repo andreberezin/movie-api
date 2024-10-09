@@ -24,9 +24,9 @@ public class Movie {
     private Long id;
     private String title;
     private int releaseYear;
-    private double duration;
+    private int duration;
 
-    public Movie(String title, int releaseYear, double duration) {
+    public Movie(String title, int releaseYear, int duration) {
         this.title = title;
         this.releaseYear = releaseYear;
         this.duration = duration;
