@@ -1,10 +1,12 @@
 package kmdb.movies_api.actors;
 
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -20,28 +22,32 @@ public class ActorController {
 
 
     @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
-    public Optional<Actor> getActorsById(
-            @PathVariable("actorId") Long actorId) {
+    @ResponseStatus(HttpStatus.OK)
+    public Actor getActorsById(@PathVariable("actorId") Long actorId) {
         return actorService.getActorById(actorId);
     }
 
     @GetMapping //retrieve data by name or retrieve all if a parameter isn't given
+    @ResponseStatus(HttpStatus.OK)
     public List<Actor> findActorsByName(@RequestParam(required = false) String name) {
         return actorService.findActorsByName(name);
     }
 
     @PostMapping // add data
+    @ResponseStatus(HttpStatus.CREATED)
     public void addActor(@RequestBody Actor actor) {
         actorService.addActor(actor);
     }
 
     @DeleteMapping(path = "{actorId}") // delete data by id
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteActor(
             @PathVariable("actorId") Long actorId) {
         actorService.deleteActor(actorId);
     }
 
     @PatchMapping(path = "{actorId}") // modify data by id
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateActor(
             @PathVariable("actorId") Long actorId,
 

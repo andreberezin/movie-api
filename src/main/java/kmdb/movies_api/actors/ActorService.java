@@ -1,10 +1,18 @@
 package kmdb.movies_api.actors;
 
 import jakarta.transaction.Transactional;
-import kmdb.movies_api.exception.ApiRequestException;
+import jakarta.validation.Valid;
+import kmdb.movies_api.exception.ApiExceptionHandler;
+import kmdb.movies_api.exception.ResourceAlreadyExistsException;
+import kmdb.movies_api.exception.ResourceNotFoundException;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +23,6 @@ public class ActorService {
 
     private final ActorRepository actorRepository;
 
-    @Autowired
     public ActorService(ActorRepository actorRepository) {
         this.actorRepository = actorRepository;
     }
@@ -25,14 +32,10 @@ public class ActorService {
         return actorRepository.findAll();
     }*/
 
-    public Optional<Actor> getActorById(Long actorId) {
-
-        boolean exists = actorRepository.existsById(actorId);
-        if(!exists) {
-            throw new ApiRequestException("Actor with id " + actorId + " does not exist");
-        }
-
-       return actorRepository.findById(actorId);
+    public Actor getActorById(Long actorId) {
+       return actorRepository.findById(actorId)
+               .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist")
+       );
     }
 
     public static Specification<Actor> nameContains(String name) {
@@ -53,30 +56,27 @@ public class ActorService {
         return actorRepository.findAll(spec);
     }
 
-    public void addActor(Actor actor) {
+    public void addActor(@Valid @RequestBody Actor actor) {
         Optional<Actor> actorOptional = actorRepository
                 .findByName(actor.getName());
         if(actorOptional.isPresent()) {
-            throw new IllegalStateException("Actor already exists in database");
+                    throw new ResourceAlreadyExistsException("Actor " + actor.getName() + " already exists");
         }
         actorRepository.save(actor);
     }
 
     public void deleteActor(Long actorId) {
-        boolean exists = actorRepository.existsById(actorId);
-        if(!exists) {
-            throw new IllegalStateException(
-                    "Actor with id " + actorId + " does not exist in database");
-        }
+        actorRepository.findById(actorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist"));
         actorRepository.deleteById(actorId);
-    }
+    };
+
+
 
     @Transactional
     public void updateActor(Long actorId, String name, LocalDate birthDate) {
-        Actor actor = actorRepository.findById(actorId) // fetch entity from db
-                .orElseThrow(() -> new IllegalStateException(
-                        "Actor with id " + actorId + " does not exist in database"
-                ));
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist"));
 
         if (name != null && !name.isEmpty()) { // update only non-null fields
             actor.setName(name);

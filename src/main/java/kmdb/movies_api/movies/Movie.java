@@ -32,4 +32,14 @@ public class Movie {
         this.duration = duration;
     }
 
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", releaseYear=" + releaseYear +
+                ", duration=" + duration +
+                '}';
+    }
+
 }
