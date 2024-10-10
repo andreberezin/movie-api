@@ -1,7 +1,12 @@
 package kmdb.movies_api.movies;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+
 
 @Entity
 @Table
@@ -20,8 +25,16 @@ public class Movie {
     )
 
     private Long id;
+
+    @NotEmpty(message = "Title cannot be empty")
     private String title;
+
+    @Min(value = 1, message = "Movie release year must be between 1 and 2300")
+    @Max(value = 2300, message = "Movie release year must be between 1 and 2300")
     private int releaseYear;
+
+    @Min(value = 1, message = "Movie duration must be between 1 and 1000 minutes")
+    @Max(value = 1000, message = "Movie duration must be between 1 and 1000 minutes")
     private int duration;
 
     public Movie(String title, int releaseYear, int duration) {
@@ -29,15 +42,4 @@ public class Movie {
         this.releaseYear = releaseYear;
         this.duration = duration;
     }
-
-/*    @Override
-    public String toString() {
-        return "Movie{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", releaseYear=" + releaseYear +
-                ", duration=" + duration +
-                '}';
-    }*/
-
 }

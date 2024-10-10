@@ -46,6 +46,11 @@ public class ActorService {
             return actorRepository.findAll(); // Return all actors if no name is specified
         }
         Specification<Actor> spec = nameContains(name);
+
+        if (actorRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
+            throw new ResourceNotFoundException("Actor with name containing " + name + " does not exist");
+        }
+
         return actorRepository.findAll(spec);
     }
 

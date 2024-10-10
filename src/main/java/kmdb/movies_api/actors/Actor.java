@@ -1,19 +1,15 @@
 package kmdb.movies_api.actors;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @Entity
 @Table
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class Actor {
     @Id
     @SequenceGenerator(
@@ -27,38 +23,15 @@ public class Actor {
             generator = "actor_sequence"
     )
 
+    //@Min(message = "The smallest id number is 1", value = 1L)
     private Long id;
 
-    @NotNull(message = "Name cannot be null")
     @NotEmpty(message = "Name cannot be empty")
     private String name;
 
-    @NotNull
     private LocalDate birthDate;
-
         public Actor(String name, LocalDate birthDate) {
         this.name = name;
         this.birthDate = birthDate;
     }
-
-/*    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }*/
-
-/*    @Override
-    public String toString() {
-        return "Actor{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", birthDate=" + birthDate +
-                '}';
-    }*/
 }

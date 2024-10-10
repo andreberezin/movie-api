@@ -1,8 +1,12 @@
 package kmdb.movies_api.movies;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import kmdb.movies_api.exception.ResourceAlreadyExistsException;
+import kmdb.movies_api.exception.ResourceNotFoundException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,16 +23,12 @@ public class MovieService {
         return movieRepository.findAll();
     }*/
 
-    public Optional<Movie> getMovieById(Long movieId) {
-        boolean exists = movieRepository.existsById(movieId);
-        if (!exists) {
-            throw new IllegalStateException(
-                    "Movie with id " + movieId + " does not exist in database"
-            );
+    // TODO if id is not specified. Currently returns 404 with default body
+    public Movie getMovieById(Long movieId) {
+        return movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + movieId + " does not exist"));
         }
 
-        return movieRepository.findById(movieId);
-    }
 
     public static Specification<Movie> titleContains(String title) {
         return (root, query, criteriaBuilder) -> {
@@ -45,14 +45,19 @@ public class MovieService {
             return movieRepository.findAll(); // Return all movies if no title is specified
         }
         Specification<Movie> spec = titleContains(title);
+
+        if (movieRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
+            throw new ResourceNotFoundException("Movie with title containing " + title + " does not exist");
+        }
+
         return movieRepository.findAll(spec);
     }
 
-    public void addMovie(Movie movie) {
+    public void addMovie(@Valid @RequestBody Movie movie) {
         Optional<Movie> movieOptional = movieRepository
                 .findByTitle(movie.getTitle());
         if(movieOptional.isPresent()) {
-            throw new IllegalStateException("Movie already exists in database");
+            throw new ResourceAlreadyExistsException("Movie already exists in database");
         }
         movieRepository.save(movie);
     }
@@ -60,16 +65,16 @@ public class MovieService {
     public void deleteMovie(Long movieId) {
         boolean exists = movieRepository.existsById(movieId);
         if (!exists) {
-            throw new IllegalArgumentException(
+            throw new ResourceNotFoundException(
                     "Movie with id " + movieId + " does not exist in database");
         }
         movieRepository.deleteById(movieId);
     }
 
     @Transactional
-    public void updateMovie(Long movieId, String title, int releaseYear, int duration) {
+    public void updateMovie(@Valid @RequestBody Long movieId, String title, int releaseYear, int duration) {
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new IllegalStateException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Movie with id " + movieId + " does not exist in database"
                 ));
 
