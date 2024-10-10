@@ -3,6 +3,7 @@ package kmdb.movies_api.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,7 +58,7 @@ public class ApiExceptionHandler {
 
         // Create response body with status code and error messages
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("status", HttpStatus.BAD_REQUEST.value()); // Add status code 400 to the body
+        responseBody.put("HttpStatus", String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase())); // Add status code 400 to the body
         responseBody.put("errors", errors); // Add validation error messages
 
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST); // Return response with status code

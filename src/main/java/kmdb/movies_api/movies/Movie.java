@@ -29,12 +29,12 @@ public class Movie {
     @NotEmpty(message = "Title cannot be empty")
     private String title;
 
-    @Min(value = 1, message = "Movie release year must be between 1 and 2300")
-    @Max(value = 2300, message = "Movie release year must be between 1 and 2300")
+    @Min(value = 0, message = "Movie release year must be between 0 and 2300")
+    @Max(value = 2300, message = "Movie release year must be between 0 and 2300")
     private int releaseYear;
 
-    @Min(value = 1, message = "Movie duration must be between 1 and 1000 minutes")
-    @Max(value = 1000, message = "Movie duration must be between 1 and 1000 minutes")
+    @Min(value = 0, message = "Movie duration must be between 0 and 1000 minutes")
+    @Max(value = 1000, message = "Movie duration must be between 0 and 1000 minutes")
     private int duration;
 
     public Movie(String title, int releaseYear, int duration) {
