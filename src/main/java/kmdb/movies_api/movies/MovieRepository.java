@@ -1,6 +1,5 @@
 package kmdb.movies_api.movies;
 
-import kmdb.movies_api.actors.Actor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

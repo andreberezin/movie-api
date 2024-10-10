@@ -1,10 +1,12 @@
 package kmdb.movies_api.genres;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 
 @Entity
 @Table
+@Setter @Getter @NoArgsConstructor @AllArgsConstructor @ToString
 public class Genre {
    @Id
    @SequenceGenerator(
@@ -20,7 +22,12 @@ public class Genre {
    private Long id;
    private String name;
 
-    public Genre() {
+   public Genre (String name) {
+       this.name = name;
+   }
+
+
+/*    public Genre() {
     }
 
     public Genre(String name) {
@@ -49,6 +56,6 @@ public class Genre {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
-    }
+    }*/
 
 }

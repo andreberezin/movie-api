@@ -1,9 +1,6 @@
 package kmdb.movies_api.actors;
 
-import org.antlr.v4.runtime.misc.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +12,6 @@ public class ActorController {
 
     private final ActorService actorService;
 
-    @Autowired
     public ActorController(ActorService actorService) {
         this.actorService = actorService;
     }

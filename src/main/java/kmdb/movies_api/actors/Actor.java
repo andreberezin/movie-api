@@ -36,12 +36,6 @@ public class Actor {
     @NotNull
     private LocalDate birthDate;
 
-    /*    public Actor(Long id, String name, LocalDate birthDate) {
-        this.id = id;
-        this.name = name;
-        this.birthDate = birthDate;
-    }*/
-
         public Actor(String name, LocalDate birthDate) {
         this.name = name;
         this.birthDate = birthDate;

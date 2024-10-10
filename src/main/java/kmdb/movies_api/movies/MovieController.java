@@ -1,9 +1,6 @@
 package kmdb.movies_api.movies;
 
-
-import kmdb.movies_api.genres.Genre;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +12,6 @@ public class MovieController {
 
     private final MovieService movieService;
 
-    @Autowired
     public MovieController(MovieService movieService) {
         this.movieService = movieService;
     }
@@ -26,28 +22,33 @@ public class MovieController {
     }*/
 
     @GetMapping(path = "{movieId}")
+    @ResponseStatus(HttpStatus.OK)
     public Optional<Movie> getMovieById(
             @PathVariable Long movieId) {
         return movieService.getMovieById(movieId);
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<Movie> findMoviesByTitle(@RequestParam(required = false) String title) {
         return movieService.findMoviesByTitle(title);
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public void addMovie(@RequestBody Movie movie) {
         movieService.addMovie(movie);
     }
 
     @DeleteMapping(path = "{movieId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(
             @PathVariable("movieId") Long movieId) {
         movieService.deleteMovie(movieId);
     }
 
     @PatchMapping(path = "{movieId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateMovie(
             @PathVariable("movieId") Long movieId,
             @RequestBody Movie request) {

@@ -1,13 +1,11 @@
 package kmdb.movies_api.movies;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class Movie {
     @Id
     @SequenceGenerator(
@@ -32,7 +30,7 @@ public class Movie {
         this.duration = duration;
     }
 
-    @Override
+/*    @Override
     public String toString() {
         return "Movie{" +
                 "id=" + id +
@@ -40,6 +38,6 @@ public class Movie {
                 ", releaseYear=" + releaseYear +
                 ", duration=" + duration +
                 '}';
-    }
+    }*/
 
 }

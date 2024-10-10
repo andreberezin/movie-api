@@ -2,18 +2,11 @@ package kmdb.movies_api.actors;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import kmdb.movies_api.exception.ApiExceptionHandler;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +62,7 @@ public class ActorService {
         actorRepository.findById(actorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist"));
         actorRepository.deleteById(actorId);
-    };
+    }
 
 
 

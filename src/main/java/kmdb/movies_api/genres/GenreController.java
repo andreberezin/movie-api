@@ -1,8 +1,6 @@
 package kmdb.movies_api.genres;
 
-
-import kmdb.movies_api.actors.Actor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +12,6 @@ public class GenreController {
 
     private final GenreService genreService;
 
-    @Autowired
     public GenreController(GenreService genreService) {
         this.genreService = genreService;
     }
@@ -25,28 +22,33 @@ public class GenreController {
     }*/
 
     @GetMapping(path = "{genreId}")
+    @ResponseStatus(HttpStatus.OK)
     public Optional<Genre> getGenreById(
             @PathVariable Long genreId) {
         return genreService.getGenreById(genreId);
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<Genre> findGenresByName(@RequestParam(required = false) String name) {
         return genreService.findGenresByName(name);
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public void addGenre(@RequestBody Genre genre) {
         genreService.addGenre(genre);
     }
 
     @DeleteMapping(path = "{genreId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGenre(
             @PathVariable("genreId") Long genreId) {
         genreService.deleteGenre(genreId);
     }
 
     @PatchMapping(path = "{genreId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateGenre(
             @PathVariable("genreId") Long genreId,
             @RequestBody Genre request) {

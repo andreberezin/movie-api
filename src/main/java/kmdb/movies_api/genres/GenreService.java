@@ -1,7 +1,6 @@
 package kmdb.movies_api.genres;
 
 import jakarta.transaction.Transactional;
-import kmdb.movies_api.actors.Actor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;

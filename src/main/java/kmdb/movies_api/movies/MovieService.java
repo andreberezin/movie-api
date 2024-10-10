@@ -1,8 +1,6 @@
 package kmdb.movies_api.movies;
 
-
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +12,12 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
 
-    @Autowired
     public MovieService(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
-    public List<Movie> getAllMovies() {
+/*    public List<Movie> getAllMovies() {
         return movieRepository.findAll();
-    }
+    }*/
 
     public Optional<Movie> getMovieById(Long movieId) {
         boolean exists = movieRepository.existsById(movieId);
