@@ -3,7 +3,6 @@ package kmdb.movies_api.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +19,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)  // Returning 400 for bad request
-    public ResponseEntity<Map<String, String>> handleMethodValidationExceptions(MethodArgumentNotValidException exception) {
+    public ResponseEntity<Map<String, Object>> handleMethodValidationExceptions(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
 
         // Extract field-specific error messages
@@ -29,7 +29,11 @@ public class ApiExceptionHandler {
             errors.put(fieldName, errorMessage);  // Field name as key, error message as value
         });
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("errors", errors); // Add validation error messages
+        responseBody.put("HttpStatus", String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase())); // Add status code 400 to the body
+
+        return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
     }
 
 /*    @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -45,7 +49,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>("Database error: " + exception.getMessage(), HttpStatus.BAD_REQUEST);
     }*/
 
-    @ExceptionHandler(ConstraintViolationException.class)
+/*    @ExceptionHandler({ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, Object>> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -58,10 +62,26 @@ public class ApiExceptionHandler {
 
         // Create response body with status code and error messages
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("HttpStatus", String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase())); // Add status code 400 to the body
         responseBody.put("errors", errors); // Add validation error messages
+        responseBody.put("HttpStatus", String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase())); // Add status code 400 to the body
 
         return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST); // Return response with status code
+    }*/
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiException> handleConstraintViolationException(ConstraintViolationException exception) {
+        ArrayList<String> errors = new ArrayList<>();
+        exception.getConstraintViolations().forEach(violation -> {
+            String errorMessage = violation.getMessage();
+            errors.add(errorMessage);
+        });
+
+        ApiException constraintViolationException = new ApiException(
+                String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()),
+                errors
+        );
+        return new ResponseEntity<>(constraintViolationException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
    @ExceptionHandler(value = {ResourceNotFoundException.class})
@@ -69,11 +89,12 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleResourceNotFoundException(ResourceNotFoundException exception) {
         // 1. create a payload containing exception and details
         ApiException resourceNotFoundException = new ApiException(
-                exception.getMessage(),
-                HttpStatus.NOT_FOUND
+                HttpStatus.NOT_FOUND,
+                exception.getMessage()
                 //ZonedDateTime.now(ZoneId.of("Z"))
         );
         // 2. return response entity
+       // TODO make this return format match ConstraintViolationException.class return format
         return new ResponseEntity<>(resourceNotFoundException, HttpStatus.NOT_FOUND);
     }
 
@@ -82,11 +103,12 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleResourceExists(ResourceAlreadyExistsException exception) {
         // 1. create a payload containing exception and details
         ApiException resourceAlreadyExists = new ApiException(
-                exception.getMessage(),
-                HttpStatus.CONFLICT
+                HttpStatus.CONFLICT,
+                exception.getMessage()
                 //ZonedDateTime.now(ZoneId.of("Z"))
         );
         // 2. return response entity
+        // TODO make this return format match ConstraintViolationException.class return format
         return new ResponseEntity<>(resourceAlreadyExists, HttpStatus.CONFLICT);
     }
 }

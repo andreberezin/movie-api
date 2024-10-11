@@ -13,8 +13,8 @@ import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class ApiException {
-    private String error;
-    private HttpStatus httpStatus;
+    private String httpStatus;
+    private ArrayList<String> errors;
     //private List<String> errors;
     //private ZonedDateTime timestamp;
 
