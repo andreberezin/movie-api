@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-
+// TODO maybe don't need this?
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class ApiValidationException {
     private HttpStatus httpStatus;
