@@ -49,6 +49,20 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(constraintViolationException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
+    @ExceptionHandler(IllegalArgumentException.class) // handle MethodArgumentNotValidException
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiException> handleIllegalArgumentException(IllegalArgumentException exception) {
+        ArrayList<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage()); // add the error message to the Array
+
+        ApiException illegalArgumentException = new ApiException(
+                String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()), // reformat httpStatus so looks better
+                errors
+        );
+
+        return new ResponseEntity<>(illegalArgumentException, HttpStatus.BAD_REQUEST); // Return response with status code
+    }
+
    @ExceptionHandler(ResourceNotFoundException.class) // custom exception for missing resource
    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiException> handleResourceNotFoundException(ResourceNotFoundException exception) {
