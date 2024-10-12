@@ -92,7 +92,7 @@ public class ActorService {
 
 
     @Transactional
-    public void updateActor(Long actorId, String name, LocalDate birthDate) {
+    public void updateActor(Long actorId, String name, String birthDate) {
         if (actorId < 1) {
             throw new IllegalArgumentException("Actor ID must be greater than 0");
         }

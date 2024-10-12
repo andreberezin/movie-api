@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import java.time.format.DateTimeParseException;
 
 import java.util.ArrayList;
 
@@ -65,19 +64,6 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(illegalArgumentException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
-    @ExceptionHandler(DateTimeParseException.class) // handle DateTimeParseException
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiException> handleDateTimeParseException(DateTimeParseException exception) {
-        ArrayList<String> errors = new ArrayList<>();
-        errors.add("Dates must be in the ISO 8601 format (YYYY-MM-DD)"); // add the error message to the Array
-
-        ApiException dateTimeParseException = new ApiException(
-                String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()), // reformat httpStatus so looks better
-                errors
-        );
-
-        return new ResponseEntity<>(dateTimeParseException, HttpStatus.NOT_FOUND); // Return response with status code
-    } // ISO 8601 date format (YYYY-MM-DD)
 
     @ExceptionHandler(NoHandlerFoundException.class) // handle NoHandlerFoundException
     @ResponseStatus(HttpStatus.NOT_FOUND)
