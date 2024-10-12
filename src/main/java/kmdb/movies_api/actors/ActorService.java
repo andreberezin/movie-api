@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-// TODO 1. add pagination support
 // TODO 2. add many-to-many support
 
 @Service
@@ -40,8 +39,11 @@ public class ActorService {
 
 
     public Actor getActorById(Long actorId) {
+        if (actorId < 1) {
+            throw new IllegalArgumentException("Actor ID must be greater than 0");
+        }
        return actorRepository.findById(actorId)
-               .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist")
+               .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist")
        );
     }
 
@@ -69,7 +71,7 @@ public class ActorService {
     }
 
 
-    public void addActor(@Valid @RequestBody Actor actor) {
+    public void addActor(Actor actor) {
         Optional<Actor> actorOptional = actorRepository
                 .findByName(actor.getName());
         if(actorOptional.isPresent()) {
@@ -79,8 +81,11 @@ public class ActorService {
     }
 
     public void deleteActor(Long actorId) {
+        if (actorId < 1) {
+            throw new IllegalArgumentException("Actor ID must be greater than 0");
+        }
         actorRepository.findById(actorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
         actorRepository.deleteById(actorId);
     }
 
@@ -88,8 +93,11 @@ public class ActorService {
 
     @Transactional
     public void updateActor(Long actorId, String name, LocalDate birthDate) {
+        if (actorId < 1) {
+            throw new IllegalArgumentException("Actor ID must be greater than 0");
+        }
         Actor actor = actorRepository.findById(actorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Actor with id " + actorId + " does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
 
         if (name != null && !name.isEmpty()) { // update only non-null fields
             actor.setName(name);

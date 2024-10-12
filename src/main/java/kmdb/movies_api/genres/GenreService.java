@@ -4,7 +4,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,22 +18,21 @@ public class GenreService {
 
     private final GenreRepository genreRepository;
 
-    @Autowired
     public GenreService(GenreRepository genreRepository) {this.genreRepository = genreRepository;}
 
-/*    public List<Genre> getAllGenres() {
-        return genreRepository.findAll();
-    }*/
+    public List<Genre> getGenres(int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Genre> genresPage = genreRepository.findAll(pageable);
+        List<Genre> genresList = genresPage.getContent();
+        return genresList;
+    }
 
-    public Optional<Genre> getGenreById(Long genreId) {
-
-        boolean exists = genreRepository.existsById(genreId);
-        if (!exists) {
-            throw new ResourceNotFoundException(
-                    "Genre with id " + genreId + " does not exist in database"
-            );
+    public Genre getGenreById(Long genreId) {
+        if (genreId < 1) {
+            throw new IllegalArgumentException("Genre ID must be greater than 0");
         }
-        return genreRepository.findById(genreId);
+        return genreRepository.findById(genreId)
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
     }
 
     public static Specification<Genre> nameContains(String name) {
@@ -59,7 +59,7 @@ public class GenreService {
     }
 
 
-    public void addGenre(@Valid @RequestBody Genre genre) {
+    public void addGenre(Genre genre) {
         Optional<Genre> genreOptional = genreRepository
                 .findByName(genre.getName());
         if(genreOptional.isPresent()) {
@@ -69,23 +69,26 @@ public class GenreService {
     }
 
     public void deleteGenre(Long genreId) {
+        if (genreId < 1) {
+            throw new IllegalArgumentException("Genre ID must be greater than 0");
+        }
         boolean exists = genreRepository.existsById(genreId);
         if (!exists) {
             throw new ResourceNotFoundException(
-                    "Genre with id " + genreId + " does not exist in database");
+                    "Genre with ID " + genreId + " does not exist in database");
         }
         genreRepository.deleteById(genreId);
     }
 
     @Transactional
     public void updateGenre(Long genreId, String name) {
+        if (genreId < 1) {
+            throw new IllegalArgumentException("Genre ID must be greater than 0");
+        }
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Genre with id " + genreId + " does not exist in database"
+                        "Genre with ID " + genreId + " does not exist in database"
                 ));
-
-        if (name != null && !name.isEmpty()) { // update only non-null fields
-            genre.setName(name);
-        }
+        genre.setName(name);
     }
 }

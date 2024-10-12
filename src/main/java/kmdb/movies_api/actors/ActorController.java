@@ -1,9 +1,11 @@
 package kmdb.movies_api.actors;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -16,7 +18,7 @@ public class ActorController {
         this.actorService = actorService;
     }
 
-    @GetMapping(params = { "page", "size"}) // retrieve all data
+    @GetMapping(params = { "page", "size"}) // retrieve by page
     @ResponseStatus(HttpStatus.OK)
     public List<Actor> getActors(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -38,7 +40,7 @@ public class ActorController {
 
     @PostMapping // add data
     @ResponseStatus(HttpStatus.CREATED)
-    public void addActor(@RequestBody Actor actor) {
+    public void addActor(@Valid @RequestBody Actor actor) {
         actorService.addActor(actor);
     }
 

@@ -1,10 +1,7 @@
 package kmdb.movies_api.movies;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 
@@ -26,7 +23,7 @@ public class Movie {
 
     private Long id;
 
-    @NotEmpty(message = "Title cannot be empty")
+    @NotBlank(message = "Title cannot be empty")
     private String title;
 
     @Min(value = 0, message = "Movie release year must be between 0 and 2300")

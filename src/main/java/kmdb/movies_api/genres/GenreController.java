@@ -1,10 +1,10 @@
 package kmdb.movies_api.genres;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/genres")
@@ -16,42 +16,45 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-/*    @GetMapping
-    public List<Genre> getAllGenres() {
-        return genreService.getAllGenres();
-    }*/
-
-    @GetMapping(path = "{genreId}")
+    @GetMapping(params = { "page", "size"}) // retrieve by page
     @ResponseStatus(HttpStatus.OK)
-    public Optional<Genre> getGenreById(
+    public List<Genre> getGenres(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
+        return genreService.getGenres(page, size);
+    }
+
+    @GetMapping(path = "{genreId}") // retrieve data one by one using id as parameter
+    @ResponseStatus(HttpStatus.OK)
+    public Genre getGenreById(
             @PathVariable Long genreId) {
         return genreService.getGenreById(genreId);
     }
 
-    @GetMapping
+    @GetMapping//retrieve data by name or retrieve all if a parameter isn't given
     @ResponseStatus(HttpStatus.OK)
     public List<Genre> findGenresByName(@RequestParam(required = false) String name) {
         return genreService.findGenresByName(name);
     }
 
-    @PostMapping
+    @PostMapping// add data
     @ResponseStatus(HttpStatus.CREATED)
-    public void addGenre(@RequestBody Genre genre) {
+    public void addGenre(@Valid @RequestBody Genre genre) {
         genreService.addGenre(genre);
     }
 
-    @DeleteMapping(path = "{genreId}")
+    @DeleteMapping(path = "{genreId}") // delete data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGenre(
             @PathVariable("genreId") Long genreId) {
         genreService.deleteGenre(genreId);
     }
 
-    @PatchMapping(path = "{genreId}")
+    @PatchMapping(path = "{genreId}") // modify data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateGenre(
             @PathVariable("genreId") Long genreId,
-            @RequestBody Genre request) {
+            @Valid @RequestBody Genre request) {
         genreService.updateGenre(genreId, request.getName());
         //genreService.updateGenre(genreId, request.getName());
     }

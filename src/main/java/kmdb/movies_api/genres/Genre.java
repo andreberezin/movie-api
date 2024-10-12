@@ -1,7 +1,10 @@
 package kmdb.movies_api.genres;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -22,7 +25,8 @@ public class Genre {
 
    private Long id;
 
-   @NotEmpty(message = "Name cannot be empty")
+   //@NotEmpty(message = "Name cannot be empty")
+   @NotBlank(message = "Name cannot be empty")
    private String name;
 
    public Genre (String name) {
