@@ -1,6 +1,5 @@
 package kmdb.movies_api.actors;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +16,13 @@ public class ActorController {
         this.actorService = actorService;
     }
 
+    @GetMapping(params = { "page", "size"}) // retrieve all data
+    @ResponseStatus(HttpStatus.OK)
+    public List<Actor> getActors(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
+        return actorService.getActors(page, size);
+    }
 
     @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
     @ResponseStatus(HttpStatus.OK)

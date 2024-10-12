@@ -4,12 +4,18 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+// TODO 1. add pagination support
+// TODO 2. add many-to-many support
 
 @Service
 public class ActorService {
@@ -21,9 +27,17 @@ public class ActorService {
     }
 
 
-/*    public List<Actor> getActors() { // findActorsByName already does this if no parameter is given
-        return actorRepository.findAll();
-    }*/
+    // get all the actors or actors by page number and size
+    public List<Actor> getActors(int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Actor> actorsPage = actorRepository.findAll(pageable);
+        List<Actor> actorsList = actorsPage.getContent();
+        if (actorsList.isEmpty()) {
+            throw new ResourceNotFoundException("No actors found on page " + page + " with size " + size);
+        }
+        return actorsList;
+    }
+
 
     public Actor getActorById(Long actorId) {
        return actorRepository.findById(actorId)
@@ -53,6 +67,7 @@ public class ActorService {
 
         return actorRepository.findAll(spec);
     }
+
 
     public void addActor(@Valid @RequestBody Actor actor) {
         Optional<Actor> actorOptional = actorRepository
@@ -84,7 +99,6 @@ public class ActorService {
             actor.setBirthDate(birthDate);
         }
 
-        //actorRepository.save(actor); // @Transactional already saves automatically
     }
 
 
