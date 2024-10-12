@@ -1,6 +1,5 @@
 package kmdb.movies_api.movies;
 
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -5,8 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping(path = "api/actors")
@@ -55,17 +53,9 @@ public class ActorController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateActor(
             @PathVariable("actorId") Long actorId,
-
-           // modifying via body
-            @RequestBody Actor request) {
+            @RequestBody Actor request) { // modifying via body
         actorService.updateActor(actorId, request.getName(), request.getBirthDate());
-    }
-            // modifying via parameters
-/*
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate)) {
-*/
-
+        }
     }
 
 

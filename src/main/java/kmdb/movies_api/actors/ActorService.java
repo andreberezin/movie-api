@@ -1,16 +1,13 @@
 package kmdb.movies_api.actors;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

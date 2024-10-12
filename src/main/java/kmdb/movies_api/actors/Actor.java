@@ -1,13 +1,9 @@
 package kmdb.movies_api.actors;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -29,7 +25,6 @@ public class Actor {
 
     private Long id;
 
-    //@NotEmpty(message = "Name cannot be empty")
     @NotBlank(message = "Name cannot be empty")
     private String name;
 

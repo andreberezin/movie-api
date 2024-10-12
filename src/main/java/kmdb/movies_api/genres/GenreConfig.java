@@ -18,9 +18,18 @@ public class GenreConfig {
             Genre genre2 = new Genre(
                     "sci-fi"
             );
+            Genre genre3 = new Genre(
+                    "drama"
+            );
+            Genre genre4 = new Genre(
+                    "drama"
+            );
+            Genre genre5 = new Genre(
+                    "adventure"
+            );
 
             genreRepository.saveAll(
-                    List.of(genre1, genre2)
+                    List.of(genre1, genre2, genre3, genre4, genre5)
             );
         };
     }
