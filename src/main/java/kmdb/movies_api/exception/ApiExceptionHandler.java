@@ -24,12 +24,12 @@ public class ApiExceptionHandler {
             errors.add(errorMessage);
         });
 
-        ApiException constraintViolationException = new ApiException(
+        ApiException methodArgumentNotValidException = new ApiException(
                 String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()), // reformat httpStatus so looks better
                 errors
         );
 
-        return new ResponseEntity<>(constraintViolationException, HttpStatus.BAD_REQUEST); // Return response with status code
+        return new ResponseEntity<>(methodArgumentNotValidException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
     @ExceptionHandler(ConstraintViolationException.class) // handle ConstraintViolationException
@@ -62,6 +62,20 @@ public class ApiExceptionHandler {
         );
 
         return new ResponseEntity<>(illegalArgumentException, HttpStatus.BAD_REQUEST); // Return response with status code
+    }
+
+    @ExceptionHandler(IllegalStateException.class) // handle IllegalArgumentException
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiException> handleIllegalStateException(IllegalStateException exception) {
+        ArrayList<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage()); // add the error message to the Array
+
+        ApiException illegalStateException = new ApiException(
+                String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()), // reformat httpStatus so looks better
+                errors
+        );
+
+        return new ResponseEntity<>(illegalStateException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
 

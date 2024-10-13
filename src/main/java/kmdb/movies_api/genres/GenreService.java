@@ -3,6 +3,7 @@ package kmdb.movies_api.genres;
 import jakarta.transaction.Transactional;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
+import kmdb.movies_api.movies.MovieRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,13 +16,22 @@ import java.util.Optional;
 public class GenreService {
 
     private final GenreRepository genreRepository;
+    private final MovieRepository movieRepository;
 
-    public GenreService(GenreRepository genreRepository) {this.genreRepository = genreRepository;}
+    public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
+        this.genreRepository = genreRepository;
+        this.movieRepository = movieRepository;
+    }
 
-    public List<Genre> getGenres(int page, int size) {
+    //public MovieRepository(MovieRepository movieRepository) {this.movieRepository = movieRepository;}
+
+    public List<Genre> getGenresByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Genre> genresPage = genreRepository.findAll(pageable);
         List<Genre> genresList = genresPage.getContent();
+        if (genresList.isEmpty()) {
+            throw new ResourceNotFoundException("No genres found on page " + page);
+        }
         return genresList;
     }
 
@@ -29,8 +39,12 @@ public class GenreService {
         if (genreId < 1) {
             throw new IllegalArgumentException("Genre ID must be greater than 0");
         }
-        return genreRepository.findById(genreId)
+        Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
+
+        genre.setMovies(movieRepository.findAllByGenresContains(genre));
+
+        return genre;
     }
 
     public static Specification<Genre> nameContains(String name) {
@@ -44,38 +58,51 @@ public class GenreService {
 
     // filter genres by name
     public List<Genre> findGenresByName(String name) {
-        if (name == null || name.isEmpty()) {
-            return genreRepository.findAll(); // Return all genres if no name is specified
-        }
         Specification<Genre> spec = nameContains(name);
 
         if (genreRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
-            throw new ResourceNotFoundException("Genre containing " + name + " does not exist");
+            throw new ResourceNotFoundException("Genre containing '" + name + "' does not exist");
         }
 
         return genreRepository.findAll(spec);
     }
 
-
+    // add a genre
     public void addGenre(Genre genre) {
         Optional<Genre> genreOptional = genreRepository
                 .findByName(genre.getName());
         if(genreOptional.isPresent()) {
-            throw new ResourceAlreadyExistsException("Genre already exists in database");
+            throw new ResourceAlreadyExistsException("Genre '" + genre.getName() + "' already exists in database");
         }
         genreRepository.save(genre);
     }
 
-    public void deleteGenre(Long genreId) {
+    // delete a genre
+    public void deleteGenre(Long genreId, boolean force) {
         if (genreId < 1) {
             throw new IllegalArgumentException("Genre ID must be greater than 0");
         }
-        boolean exists = genreRepository.existsById(genreId);
-        if (!exists) {
-            throw new ResourceNotFoundException(
-                    "Genre with ID " + genreId + " does not exist in database");
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
+
+        int NumOfMovies = genre.getMovies().size();
+
+
+        if (force) { // if force is true then remove all relationships and delete resource
+            genreRepository.deleteById(genreId);
+            return;
         }
-        genreRepository.deleteById(genreId);
+
+            if (NumOfMovies > 0) { // if force is false and relationships exist then return exception
+                if (NumOfMovies == 1) {
+                    throw new IllegalStateException("Cannot delete genre '" + genre.getName() + "' because it is associated with " + NumOfMovies + " movie");
+                } else {
+                    throw new IllegalStateException("Cannot delete genre '" + genre.getName() + "' because it is associated with " + NumOfMovies + " movies");
+                }
+
+            }
+
+            genreRepository.deleteById(genreId); // if force is false and relationships do not exist then delete resource
     }
 
     @Transactional
@@ -89,4 +116,14 @@ public class GenreService {
                 ));
         genre.setName(name);
     }
+
+    // probably not necessary
+/*    public Genre assignMoviesToGenres(Long genreId, Long movieId) {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist in database"));
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist in database"));;
+        genre.setMovie(movie);
+        return genreRepository.save(genre);
+    }*/
 }

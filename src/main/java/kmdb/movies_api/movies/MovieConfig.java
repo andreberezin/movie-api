@@ -11,7 +11,7 @@ public class MovieConfig {
 
     @Bean
     CommandLineRunner CommandLineRunnerMovie(MovieRepository movieRepository) {
-        return args -> {
+        return args -> { // need 20 movies
             Movie movie1 = new Movie(
                     "The Godfather",
                     1972,
@@ -22,9 +22,14 @@ public class MovieConfig {
                     1994,
                     142
             );
+            Movie movie3 = new Movie(
+                    "Cast away",
+                    2000,
+                    143
+            );
 
             movieRepository.saveAll(
-                    List.of(movie1, movie2)
+                    List.of(movie1, movie2, movie3)
             );
         };
     }

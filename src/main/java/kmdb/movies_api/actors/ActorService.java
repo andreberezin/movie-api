@@ -24,12 +24,12 @@ public class ActorService {
 
 
     // get all the actors or actors by page number and size
-    public List<Actor> getActors(int page, int size) {
+    public List<Actor> getActorsByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Actor> actorsPage = actorRepository.findAll(pageable);
         List<Actor> actorsList = actorsPage.getContent();
         if (actorsList.isEmpty()) {
-            throw new ResourceNotFoundException("No actors found on page " + page + " with size " + size);
+            throw new ResourceNotFoundException("No actors found on page " + page);
         }
         return actorsList;
     }
@@ -55,39 +55,53 @@ public class ActorService {
 
     // filter actors by name
     public List<Actor> findActorsByName(String name) {
-        if (name == null || name.isEmpty()) {
-            return actorRepository.findAll(); // Return all actors if no name is specified
-        }
         Specification<Actor> spec = nameContains(name);
 
         if (actorRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
-            throw new ResourceNotFoundException("Actor with name containing " + name + " does not exist");
+            throw new ResourceNotFoundException("Actor with name containing '" + name + "' does not exist");
         }
 
         return actorRepository.findAll(spec);
     }
 
-
+    // add actor
     public void addActor(Actor actor) {
         Optional<Actor> actorOptional = actorRepository
                 .findByName(actor.getName());
         if(actorOptional.isPresent()) {
-                    throw new ResourceAlreadyExistsException("Actor " + actor.getName() + " already exists");
+                    throw new ResourceAlreadyExistsException("Actor '" + actor.getName() + "' already exists");
         }
         actorRepository.save(actor);
     }
 
-    public void deleteActor(Long actorId) {
+    // remove actor
+    public void deleteActor(Long actorId, boolean force) {
         if (actorId < 1) {
             throw new IllegalArgumentException("Actor ID must be greater than 0");
         }
-        actorRepository.findById(actorId)
+        Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
-        actorRepository.deleteById(actorId);
+
+        int numOfMovies = actor.getMovies().size();
+
+        if (force) { // if force is true then delete resource regardless of relationships
+            actorRepository.deleteById(actorId);
+            return;
+        }
+
+        if (numOfMovies > 0) { // if force is false and relationships exist then return exception
+            if (numOfMovies == 1) {
+                throw new IllegalStateException(("Cannot delete actor '" + actor.getName() + "' because they are associated with " + numOfMovies + " movie"));
+            } else {
+                throw new IllegalStateException(("Cannot delete actor '" + actor.getName() + "' because they are associated with " + numOfMovies + " movies"));
+            }
+        }
+
+        actorRepository.deleteById(actorId); // if force is false and relationships do not exist then delete resource
     }
 
 
-
+    // update actor
     @Transactional
     public void updateActor(Long actorId, String name, String birthDate) {
         if (actorId < 1) {

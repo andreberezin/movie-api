@@ -12,12 +12,11 @@ public class ActorConfig {
 
     @Bean
         CommandLineRunner commandLineRunnerActor(ActorRepository actorRepository) {
-            return args -> {
+            return args -> { // need 15 actors
                 Actor actor1 = new Actor(
                         "Steve Carell",
                         LocalDate.of(1962, 8, 16)
                 );
-
                 Actor actor2 = new Actor(
                         "Robert De Niro",
                         LocalDate.of(1943, 8, 17)
@@ -46,11 +45,15 @@ public class ActorConfig {
                         "Christian Bale",
                         LocalDate.of(1974, 1, 30)
                 );
+                Actor actor9 = new Actor(
+                        "Helen Hunt",
+                        LocalDate.of(1963, 6, 15)
+                );
 
 
 
                 actorRepository.saveAll(
-                        List.of(actor1, actor2, actor3, actor4, actor5, actor6, actor7)
+                        List.of(actor1, actor2, actor3, actor4, actor5, actor6, actor7, actor8, actor9)
                 );
             };
         }

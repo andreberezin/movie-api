@@ -18,10 +18,10 @@ public class GenreController {
 
     @GetMapping(params = { "page", "size"}) // retrieve by page
     @ResponseStatus(HttpStatus.OK)
-    public List<Genre> getGenres(
+    public List<Genre> getGenresByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
-        return genreService.getGenres(page, size);
+        return genreService.getGenresByPage(page, size);
     }
 
     @GetMapping(path = "{genreId}") // retrieve data one by one using id as parameter
@@ -46,8 +46,9 @@ public class GenreController {
     @DeleteMapping(path = "{genreId}") // delete data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGenre(
-            @PathVariable("genreId") Long genreId) {
-        genreService.deleteGenre(genreId);
+            @PathVariable("genreId") Long genreId,
+            @RequestParam(value = "force", defaultValue = "false", required = false) boolean force) {
+        genreService.deleteGenre(genreId, force);
     }
 
     @PatchMapping(path = "{genreId}") // modify data by id
@@ -59,4 +60,10 @@ public class GenreController {
         //genreService.updateGenre(genreId, request.getName());
     }
 
+/*    @PutMapping("/{genreId}/movies/{movieId}")
+    Genre assignMoviesToGenres(
+            @PathVariable Long genreId,
+            @PathVariable Long movieId) {
+        return genreService.assignMoviesToGenres(genreId, movieId);
+    }*/
 }

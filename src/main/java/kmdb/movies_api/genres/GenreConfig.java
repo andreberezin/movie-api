@@ -11,7 +11,7 @@ public class GenreConfig {
 
     @Bean
     CommandLineRunner commandLineRunnerGenre(GenreRepository genreRepository) {
-        return args -> {
+        return args -> { // need 5 genres
             Genre genre1 = new Genre(
                     "action"
             );
@@ -22,14 +22,17 @@ public class GenreConfig {
                     "drama"
             );
             Genre genre4 = new Genre(
-                    "drama"
+                    "comedy"
             );
             Genre genre5 = new Genre(
                     "adventure"
             );
+            Genre genre6 = new Genre(
+                    "romance"
+            );
 
             genreRepository.saveAll(
-                    List.of(genre1, genre2, genre3, genre4, genre5)
+                    List.of(genre1, genre2, genre3, genre4, genre5, genre6)
             );
         };
     }

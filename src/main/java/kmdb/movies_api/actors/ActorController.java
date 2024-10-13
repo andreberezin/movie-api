@@ -18,10 +18,10 @@ public class ActorController {
 
     @GetMapping(params = { "page", "size"}) // retrieve by page
     @ResponseStatus(HttpStatus.OK)
-    public List<Actor> getActors(
+    public List<Actor> getActorsByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
-        return actorService.getActors(page, size);
+        return actorService.getActorsByPage(page, size);
     }
 
     @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
@@ -45,8 +45,9 @@ public class ActorController {
     @DeleteMapping(path = "{actorId}") // delete data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteActor(
-            @PathVariable("actorId") Long actorId) {
-        actorService.deleteActor(actorId);
+            @PathVariable("actorId") Long actorId,
+            @RequestParam(value = "force", defaultValue = "false", required = false) boolean force) {
+        actorService.deleteActor(actorId, force);
     }
 
     @PatchMapping(path = "{actorId}") // modify data by id
