@@ -30,26 +30,13 @@ public class Genre {
    @NotBlank(message = "Name cannot be empty")
    private String name;
 
- /*@Getter
-   @ManyToMany
-   @JoinTable (
-           name = "movies_by_genre",
-           joinColumns = @JoinColumn(name = "genre_id"),
-           inverseJoinColumns = @JoinColumn(name = "movie_id"  )
-   )
-   private Set<Movie> moviesByGenre = new HashSet<>();*/
-
    @JsonIgnore
    @ManyToMany(mappedBy = "genres")
    @Getter
+   @Setter
    private Set<Movie> movies = new HashSet<>();
 
    public Genre (String name) {
        this.name = name;
    }
-
-/*    public void setMovie(Movie movie) {
-       moviesByGenre.add(movie);
-    }*/
-
 }

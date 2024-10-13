@@ -14,8 +14,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +88,56 @@ public class MovieService {
         return movieRepository.findAll(spec);
     }
 
+    // filter movies by genre
+    public List<Movie> getMoviesByGenre(Long genreId) {
+        if (genreId < 1) {
+            throw new IllegalArgumentException("Genre ID must be greater than 0");
+        }
+
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
+
+        List<Movie> moviesList = new ArrayList<>(movieRepository.findAllByGenresContains(genre));
+
+        if (moviesList.isEmpty()) {
+            throw new ResourceNotFoundException("No movies found in genre '" + genre.getName() + "'");
+        }
+        return moviesList;
+    }
+    // filter movies by actor
+    public List<Movie> getMoviesByActor(Long actorId) {
+        if (actorId < 1) {
+            throw new IllegalArgumentException("Genre ID must be greater than 0");
+        }
+
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
+
+        List<Movie> moviesList = new ArrayList<>(movieRepository.findAllByActorsContains(actor));
+
+        if (moviesList.isEmpty()) {
+            throw new ResourceNotFoundException("No movies found starring actor '" + actor.getName() + "'");
+        }
+        return moviesList;
+    }
+
+    // finds actors associated to movie
+    public Set<Actor> getActorsInMovie(Long movieId) {
+        if (movieId < 1) {
+            throw new IllegalArgumentException("Movie ID must be greater than 0");
+        }
+
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
+
+        if (movie.getActors().isEmpty()) {
+            throw new ResourceNotFoundException("No actors associated with movie '" + movie.getTitle() + "'");
+        }
+
+        return movie.getActors();
+    }
+
+    // add movie
     public void addMovie(Movie movie) {
         Optional<Movie> movieOptional = movieRepository
                 .findByTitle(movie.getTitle());
@@ -95,14 +147,17 @@ public class MovieService {
         movieRepository.save(movie);
     }
 
-    public void deleteMovie(Long movieId, boolean force) {
+    // delete movie
+    public void deleteMovie(Long movieId) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
         movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
-    }
 
+        movieRepository.deleteById(movieId);
+    }
+    // update movie
     @Transactional
     public void updateMovie(Long movieId, String title, @Valid @RequestBody int releaseYear, @Valid @RequestBody int duration) {
         if (movieId < 1) {

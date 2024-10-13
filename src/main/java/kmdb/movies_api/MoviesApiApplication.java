@@ -13,3 +13,11 @@ public class MoviesApiApplication {
 	}
 
 }
+
+// TODO readme
+
+// TODO sample data
+
+// TODO testing
+
+// TODO go over code, add comments

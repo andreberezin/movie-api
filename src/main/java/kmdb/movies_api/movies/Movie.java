@@ -1,6 +1,5 @@
 package kmdb.movies_api.movies;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kmdb.movies_api.actors.Actor;
@@ -38,11 +37,6 @@ public class Movie {
     @Min(value = 0, message = "Movie duration must be between 0 and 1000 minutes")
     @Max(value = 1000, message = "Movie duration must be between 0 and 1000 minutes")
     private int duration;
-
-/*    @JsonIgnore
-    @ManyToMany(mappedBy = "moviesByGenre")
-    @Getter
-    private Set<Genre> genres = new HashSet<>();*/
 
     @Getter
     @ManyToMany

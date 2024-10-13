@@ -1,13 +1,12 @@
 package kmdb.movies_api.movies;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import kmdb.movies_api.genres.Genre;
+import kmdb.movies_api.actors.Actor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "api/movies")
@@ -27,7 +26,7 @@ public class MovieController {
         return movieService.getMoviesByPage(page, size);
     }
 
-    @GetMapping(params = "releaseYear")
+    @GetMapping(params = "releaseYear") // retrieve by release year
     @ResponseStatus(HttpStatus.OK)
     public List<Movie> getMoviesByReleaseYear(
             @RequestParam(value = "releaseYear", defaultValue = "", required = false)
@@ -48,6 +47,27 @@ public class MovieController {
         return movieService.findMoviesByTitle(title);
     }
 
+    @GetMapping(params = "genre")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Movie> getMoviesByGenre(
+            @RequestParam(value = "genre", defaultValue = "", required = false) Long genreId) {
+        return movieService.getMoviesByGenre(genreId);
+    }
+
+    @GetMapping(params = "actor")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Movie> getMoviesByActor(
+            @RequestParam(value = "actor", defaultValue = "", required = false) Long actorId) {
+        return movieService.getMoviesByActor(actorId);
+    }
+
+    @GetMapping("/{movieId}/actors")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<Actor> getActorsInMovie(
+            @PathVariable Long movieId) {
+        return movieService.getActorsInMovie(movieId);
+    }
+
     @PostMapping // add data
     @ResponseStatus(HttpStatus.CREATED)
     public void addMovie(@Valid @RequestBody Movie movie) {
@@ -57,9 +77,8 @@ public class MovieController {
     @DeleteMapping(path = "{movieId}") // delete data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(
-            @PathVariable("movieId") Long movieId,
-            @RequestParam(value = "force", defaultValue = "false", required = false) boolean force) {
-        movieService.deleteMovie(movieId, force);
+            @PathVariable("movieId") Long movieId) {
+        movieService.deleteMovie(movieId);
     }
 
     @PatchMapping(path = "{movieId}") // modify data by id

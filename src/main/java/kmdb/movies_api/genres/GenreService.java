@@ -23,8 +23,6 @@ public class GenreService {
         this.movieRepository = movieRepository;
     }
 
-    //public MovieRepository(MovieRepository movieRepository) {this.movieRepository = movieRepository;}
-
     public List<Genre> getGenresByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Genre> genresPage = genreRepository.findAll(pageable);
@@ -35,6 +33,7 @@ public class GenreService {
         return genresList;
     }
 
+    // TODO figure out how to include associated movies when getting genres from database - doesn't work
     public Genre getGenreById(Long genreId) {
         if (genreId < 1) {
             throw new IllegalArgumentException("Genre ID must be greater than 0");
@@ -116,14 +115,4 @@ public class GenreService {
                 ));
         genre.setName(name);
     }
-
-    // probably not necessary
-/*    public Genre assignMoviesToGenres(Long genreId, Long movieId) {
-        Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist in database"));
-        Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist in database"));;
-        genre.setMovie(movie);
-        return genreRepository.save(genre);
-    }*/
 }

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-// TODO 2. add many-to-many support
-
 @Service
 public class ActorService {
 
@@ -42,6 +40,7 @@ public class ActorService {
        return actorRepository.findById(actorId)
                .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist")
        );
+
     }
 
     public static Specification<Actor> nameContains(String name) {

@@ -57,13 +57,5 @@ public class GenreController {
             @PathVariable("genreId") Long genreId,
             @Valid @RequestBody Genre request) {
         genreService.updateGenre(genreId, request.getName());
-        //genreService.updateGenre(genreId, request.getName());
     }
-
-/*    @PutMapping("/{genreId}/movies/{movieId}")
-    Genre assignMoviesToGenres(
-            @PathVariable Long genreId,
-            @PathVariable Long movieId) {
-        return genreService.assignMoviesToGenres(genreId, movieId);
-    }*/
 }
