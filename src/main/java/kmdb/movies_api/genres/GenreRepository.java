@@ -12,6 +12,7 @@ public interface GenreRepository
         extends JpaRepository<Genre, Long>,
                 JpaSpecificationExecutor<Genre> {
 
+    // Query to find genres by name from database
     @Query("SELECT genre FROM Genre genre WHERE genre.name = ?1")
     Optional<Genre> findByName(String name);
 }

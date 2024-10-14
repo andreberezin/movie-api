@@ -19,7 +19,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleMethodValidationExceptions(MethodArgumentNotValidException exception) {
         ArrayList<String> errors = new ArrayList<>();
 
-        exception.getBindingResult().getAllErrors().forEach(error -> { // add every violation to the Array since there can be more tha one validation violation
+        exception.getBindingResult().getAllErrors().forEach(error -> { // add every violation to the array since there can be more tha one validation violation
             String errorMessage = error.getDefaultMessage();
             errors.add(errorMessage);
         });
@@ -37,7 +37,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleConstraintViolationException(ConstraintViolationException exception) {
         ArrayList<String> errors = new ArrayList<>();
 
-        exception.getConstraintViolations().forEach(violation -> { // add every violation to the Array since there can be more tha one validation violation
+        exception.getConstraintViolations().forEach(violation -> { // add every violation to the array since there can be more tha one validation violation
             String errorMessage = violation.getMessage();
             errors.add(errorMessage);
         });
@@ -54,7 +54,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiException> handleIllegalArgumentException(IllegalArgumentException exception) {
         ArrayList<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage()); // add the error message to the Array
+        errors.add(exception.getMessage()); // add the error message to the array
 
         ApiException illegalArgumentException = new ApiException(
                 String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()), // reformat httpStatus so looks better
@@ -68,7 +68,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiException> handleIllegalStateException(IllegalStateException exception) {
         ArrayList<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage()); // add the error message to the Array
+        errors.add(exception.getMessage()); // add the error message to the array
 
         ApiException illegalStateException = new ApiException(
                 String.format(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.getReasonPhrase()), // reformat httpStatus so looks better
@@ -83,7 +83,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiException> handleNoHandlerFoundException(NoHandlerFoundException exception) {
         ArrayList<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage()); // add the error message to the Array
+        errors.add(exception.getMessage()); // add the error message to the array
 
         ApiException noHandlerFoundException = new ApiException(
                 String.format(HttpStatus.NOT_FOUND.value() + " " + HttpStatus.NOT_FOUND.getReasonPhrase()), // reformat httpStatus so looks better

@@ -16,7 +16,8 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-    @GetMapping(params = { "page", "size"}) // retrieve by page
+    // retrieve data by page and page size
+    @GetMapping(params = { "page", "size"})
     @ResponseStatus(HttpStatus.OK)
     public List<Genre> getGenresByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -24,26 +25,30 @@ public class GenreController {
         return genreService.getGenresByPage(page, size);
     }
 
-    @GetMapping(path = "{genreId}") // retrieve data one by one using id as parameter
+    // retrieve data one by one using id as parameter
+    @GetMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.OK)
     public Genre getGenreById(
             @PathVariable Long genreId) {
         return genreService.getGenreById(genreId);
     }
 
-    @GetMapping//retrieve data by name or retrieve all if a parameter isn't given
+    //retrieve data by name or retrieve all if a parameter isn't given
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Genre> findGenresByName(@RequestParam(required = false) String name) {
         return genreService.findGenresByName(name);
     }
 
-    @PostMapping// add data
+    // add data
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void addGenre(@Valid @RequestBody Genre genre) {
         genreService.addGenre(genre);
     }
 
-    @DeleteMapping(path = "{genreId}") // delete data by id
+    // delete data by id
+    @DeleteMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGenre(
             @PathVariable("genreId") Long genreId,
@@ -51,7 +56,8 @@ public class GenreController {
         genreService.deleteGenre(genreId, force);
     }
 
-    @PatchMapping(path = "{genreId}") // modify data by id
+    // modify data by id
+    @PatchMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateGenre(
             @PathVariable("genreId") Long genreId,

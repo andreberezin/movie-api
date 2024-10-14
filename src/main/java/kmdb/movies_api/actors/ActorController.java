@@ -16,6 +16,7 @@ public class ActorController {
         this.actorService = actorService;
     }
 
+    // get actors by page and page size
     @GetMapping(params = { "page", "size"}) // retrieve by page
     @ResponseStatus(HttpStatus.OK)
     public List<Actor> getActorsByPage(
@@ -24,25 +25,29 @@ public class ActorController {
         return actorService.getActorsByPage(page, size);
     }
 
+    // get actors by id
     @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
     @ResponseStatus(HttpStatus.OK)
     public Actor getActorsById(@PathVariable("actorId") Long actorId) {
         return actorService.getActorById(actorId);
     }
 
-    @GetMapping //retrieve data by name or retrieve all if a parameter isn't given
+    //retrieve data by name or retrieve all if a parameter isn't given
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Actor> findActorsByName(@RequestParam(required = false) String name) {
         return actorService.findActorsByName(name);
     }
 
-    @PostMapping // add data
+    // add data
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void addActor(@Valid @RequestBody Actor actor) {
         actorService.addActor(actor);
     }
 
-    @DeleteMapping(path = "{actorId}") // delete data by id
+    // delete data by id. Also include force parameter in case relationships exist
+    @DeleteMapping(path = "{actorId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteActor(
             @PathVariable("actorId") Long actorId,
@@ -50,7 +55,8 @@ public class ActorController {
         actorService.deleteActor(actorId, force);
     }
 
-    @PatchMapping(path = "{actorId}") // modify data by id
+    // modify data by id
+    @PatchMapping(path = "{actorId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateActor(
             @PathVariable("actorId") Long actorId,

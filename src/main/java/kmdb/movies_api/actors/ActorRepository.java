@@ -12,6 +12,7 @@ public interface ActorRepository
         extends JpaRepository<Actor, Long>,
                 JpaSpecificationExecutor<Actor> {
 
+    // Query to find actors by name from database
     @Query("SELECT actor FROM Actor actor WHERE actor.name = ?1")
     Optional<Actor> findByName(String name);
 

@@ -30,6 +30,7 @@ public class Genre {
    @NotBlank(message = "Name cannot be empty")
    private String name;
 
+   // ManyToMany mapping between movies and genres
    @JsonIgnore
    @ManyToMany(mappedBy = "genres")
    @Getter

@@ -2,10 +2,8 @@ package kmdb.movies_api.exception;
 
 public class ResourceAlreadyExistsException extends RuntimeException {
 
-    public ResourceAlreadyExistsException(String message) {
-        super(message);
-    }
-    public ResourceAlreadyExistsException(String message, Throwable cause) {
+    public ResourceAlreadyExistsException(String message) {super(message);}
+/*    public ResourceAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
-    }
+    }*/
 }

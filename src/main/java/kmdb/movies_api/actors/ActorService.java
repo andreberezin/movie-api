@@ -20,7 +20,6 @@ public class ActorService {
         this.actorRepository = actorRepository;
     }
 
-
     // get all the actors or actors by page number and size
     public List<Actor> getActorsByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
@@ -32,7 +31,7 @@ public class ActorService {
         return actorsList;
     }
 
-
+    // get actors by id
     public Actor getActorById(Long actorId) {
         if (actorId < 1) {
             throw new IllegalArgumentException("Actor ID must be greater than 0");
@@ -42,7 +41,7 @@ public class ActorService {
        );
 
     }
-
+    // method to check if there is a match in database for entered name when filtering actors by name
     public static Specification<Actor> nameContains(String name) {
         return (root, query, criteriaBuilder) -> {
             if (name == null || name.isEmpty()) {
@@ -95,10 +94,8 @@ public class ActorService {
                 throw new IllegalStateException(("Cannot delete actor '" + actor.getName() + "' because they are associated with " + numOfMovies + " movies"));
             }
         }
-
         actorRepository.deleteById(actorId); // if force is false and relationships do not exist then delete resource
     }
-
 
     // update actor
     @Transactional
@@ -116,8 +113,5 @@ public class ActorService {
         if (birthDate != null) { // update only non-null fields
             actor.setBirthDate(birthDate);
         }
-
     }
-
-
 }

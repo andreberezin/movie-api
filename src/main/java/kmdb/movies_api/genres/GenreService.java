@@ -23,6 +23,7 @@ public class GenreService {
         this.movieRepository = movieRepository;
     }
 
+    // get genres by page and page size
     public List<Genre> getGenresByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Genre> genresPage = genreRepository.findAll(pageable);
@@ -33,6 +34,7 @@ public class GenreService {
         return genresList;
     }
 
+    // get genre by id
     // TODO figure out how to include associated movies when getting genres from database - doesn't work
     public Genre getGenreById(Long genreId) {
         if (genreId < 1) {
@@ -46,6 +48,7 @@ public class GenreService {
         return genre;
     }
 
+    // check if there are any genres that match the given name
     public static Specification<Genre> nameContains(String name) {
         return (root, query, criteriaBuilder) -> {
             if (name == null || name.isEmpty()) {
@@ -98,12 +101,11 @@ public class GenreService {
                 } else {
                     throw new IllegalStateException("Cannot delete genre '" + genre.getName() + "' because it is associated with " + NumOfMovies + " movies");
                 }
-
             }
-
             genreRepository.deleteById(genreId); // if force is false and relationships do not exist then delete resource
     }
 
+    // update genre
     @Transactional
     public void updateGenre(Long genreId, String name) {
         if (genreId < 1) {

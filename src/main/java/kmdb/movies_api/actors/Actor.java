@@ -32,11 +32,13 @@ public class Actor {
     @NotBlank(message = "Name cannot be empty")
     private String name;
 
+    // ManyToMany mapping between movies and actors
     @JsonIgnore
     @ManyToMany(mappedBy = "actors")
     @Getter
     private Set<Movie> movies = new HashSet<>();
 
+    // ensure that birthDate is stored in database in a readable format and use the @Pattern for input validation
     @Column(columnDefinition = "VARCHAR(10)")
     @Pattern(regexp = "(19|20)\\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])", message = "Please enter a valid date in yyyy-MM-dd format")
     private String birthDate;

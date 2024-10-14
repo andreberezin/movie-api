@@ -18,7 +18,8 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    @GetMapping(params = { "page", "size"}) // retrieve by page
+    // get movies by page and page size
+    @GetMapping(params = { "page", "size"})
     @ResponseStatus(HttpStatus.OK)
     public List<Movie> getMoviesByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -26,7 +27,8 @@ public class MovieController {
         return movieService.getMoviesByPage(page, size);
     }
 
-    @GetMapping(params = "releaseYear") // retrieve by release year
+    // get movie by release year
+    @GetMapping(params = "releaseYear")
     @ResponseStatus(HttpStatus.OK)
     public List<Movie> getMoviesByReleaseYear(
             @RequestParam(value = "releaseYear", defaultValue = "", required = false)
@@ -34,19 +36,22 @@ public class MovieController {
         return movieService.getMoviesByReleaseYear(releaseYear);
     }
 
-    @GetMapping(path = "{movieId}") // retrieve data one by one using id as parameter
+    // get data one by one using id as parameter
+    @GetMapping(path = "{movieId}")
     @ResponseStatus(HttpStatus.OK)
     public Movie getMovieById(
             @PathVariable Long movieId) {
         return movieService.getMovieById(movieId);
     }
 
-    @GetMapping //retrieve data by name or retrieve all if a parameter isn't given
+    // get movies by name or get all if a parameter isn't given
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Movie> findMoviesByTitle(@RequestParam(required = false) String title) {
         return movieService.findMoviesByTitle(title);
     }
 
+    // get movies by genre
     @GetMapping(params = "genre")
     @ResponseStatus(HttpStatus.OK)
     public List<Movie> getMoviesByGenre(
@@ -54,6 +59,7 @@ public class MovieController {
         return movieService.getMoviesByGenre(genreId);
     }
 
+    // get movies by actor
     @GetMapping(params = "actor")
     @ResponseStatus(HttpStatus.OK)
     public List<Movie> getMoviesByActor(
@@ -61,6 +67,7 @@ public class MovieController {
         return movieService.getMoviesByActor(actorId);
     }
 
+    // get actors in a movie
     @GetMapping("/{movieId}/actors")
     @ResponseStatus(HttpStatus.OK)
     public Set<Actor> getActorsInMovie(
@@ -68,12 +75,14 @@ public class MovieController {
         return movieService.getActorsInMovie(movieId);
     }
 
+    // add movie
     @PostMapping // add data
     @ResponseStatus(HttpStatus.CREATED)
     public void addMovie(@Valid @RequestBody Movie movie) {
         movieService.addMovie(movie);
     }
 
+    // delete movie
     @DeleteMapping(path = "{movieId}") // delete data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(
@@ -81,6 +90,7 @@ public class MovieController {
         movieService.deleteMovie(movieId);
     }
 
+    // update movie
     @PatchMapping(path = "{movieId}") // modify data by id
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateMovie(
@@ -89,6 +99,7 @@ public class MovieController {
         movieService.updateMovie(movieId, request.getTitle(), request.getReleaseYear(), request.getDuration());
     }
 
+    // assign genres to movies
     @PutMapping("/{movieId}/genres/{genreId}")
     Movie assignGenresToMovies(
             @PathVariable Long movieId,
@@ -96,6 +107,7 @@ public class MovieController {
         return movieService.assignGenresToMovies(movieId, genreId);
     }
 
+    // remove assigned genres from movies
     @DeleteMapping("/{movieId}/genres/{genreId}")
     public void removeGenreFromMovie(
             @PathVariable Long movieId,
@@ -103,6 +115,7 @@ public class MovieController {
         movieService.removeGenreFromMovie(movieId, genreId);
     }
 
+    // assign actors to movies
     @PutMapping("/{movieId}/actors/{actorsId}")
     Movie assignActorToMovie(
             @PathVariable Long movieId,
@@ -110,6 +123,7 @@ public class MovieController {
         return movieService.assignActorToMovie(movieId, actorsId);
     }
 
+    // remove assigned actors from movies
     @DeleteMapping("/{movieId}/actors/{actorsId}")
     public void removeActorFromMovie(
             @PathVariable Long movieId,

@@ -32,6 +32,8 @@ public class MovieService {
         this.genreRepository = genreRepository;
         this.actorRepository = actorRepository;
     }
+
+    // get movies by page and page size
     public List<Movie> getMoviesByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Movie> moviesPage = movieRepository.findAll(pageable);
@@ -42,6 +44,7 @@ public class MovieService {
         return moviesList;
     }
 
+    // get movies by release year
     public List<Movie> getMoviesByReleaseYear(int releaseYear) {
         List<Movie> moviesList = movieRepository.findAll();
 
@@ -59,6 +62,7 @@ public class MovieService {
         return moviesList;
     }
 
+    // get movies by id
     public Movie getMovieById(Long movieId) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
@@ -67,7 +71,7 @@ public class MovieService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
         }
 
-
+    // check if there is a match in database for given movie title
     public static Specification<Movie> titleContains(String title) {
         return (root, query, criteriaBuilder) -> {
             if (title == null || title.isEmpty()) {
@@ -104,6 +108,7 @@ public class MovieService {
         }
         return moviesList;
     }
+
     // filter movies by actor
     public List<Movie> getMoviesByActor(Long actorId) {
         if (actorId < 1) {
