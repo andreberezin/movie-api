@@ -35,8 +35,8 @@ public class ActorConfig {
                         LocalDate.of(1954, 12, 28)
                 );
                 Actor actor6 = new Actor(
-                        "Al Pacino",
-                        LocalDate.of(1940, 3, 25)
+                        "Brad Pitt",
+                        LocalDate.of(1963, 12, 18)
                 );
                 Actor actor7 = new Actor(
                         "Morgan Freeman",
@@ -50,12 +50,45 @@ public class ActorConfig {
                         "Helen Hunt",
                         LocalDate.of(1963, 6, 15)
                 );
-
+                Actor actor10 = new Actor(
+                        "Leonardo DiCaprio",
+                        LocalDate.of(1974, 11, 11)
+                );
+                Actor actor11 = new Actor(
+                        "Emily Blunt",
+                        LocalDate.of(1983, 2, 23)
+                );
+                Actor actor12 = new Actor(
+                        "Matt Damon",
+                        LocalDate.of(1970, 10, 8)
+                );
+                Actor actor13 = new Actor(
+                        "Jeff Goldblum",
+                        LocalDate.of(1952, 10, 22)
+                );
+                Actor actor14 = new Actor(
+                        "Russel Crowe",
+                        LocalDate.of(1964, 3, 7)
+                );
+                Actor actor15 = new Actor(
+                        "Robin Wright",
+                        LocalDate.of(1966, 3, 8)
+                );
+                Actor actor16 = new Actor(
+                        "Samuel L. Jackson",
+                        LocalDate.of(1948, 12, 21)
+                );
+                Actor actor17 = new Actor(
+                        "Uma Thurman",
+                        LocalDate.of(1970, 3, 29)
+                );
 
 
                 actorRepository.saveAll(
-                        List.of(actor1, actor2, actor3, actor4, actor5, actor6, actor7, actor8, actor9)
+                        List.of(actor1, actor2, actor3, actor4, actor5, actor6, actor7, actor8, actor9, actor10, actor11, actor12, actor13, actor14, actor15, actor16, actor17)
                 );
+
+
             };
         }
 }

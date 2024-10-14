@@ -15,5 +15,8 @@ public class MoviesApiApplication {
 }
 
 // TODO sample data
+// 15 actors
+// 5 genres
+// 20 movies
 
 // TODO testing

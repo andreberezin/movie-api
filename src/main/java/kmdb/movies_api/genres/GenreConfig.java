@@ -31,9 +31,12 @@ public class GenreConfig {
             Genre genre6 = new Genre(
                     "romance"
             );
+            Genre genre7 = new Genre(
+                    "horror"
+            );
 
             genreRepository.saveAll(
-                    List.of(genre1, genre2, genre3, genre4, genre5, genre6)
+                    List.of(genre1, genre2, genre3, genre4, genre5, genre6, genre7)
             );
         };
     }
