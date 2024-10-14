@@ -1,3 +1,5 @@
+// necessary only for testing when spring.jpa.hibernate.ddl-auto=create-drop
+
 /*
 package kmdb.movies_api.genres;
 

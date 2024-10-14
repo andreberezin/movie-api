@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import kmdb.movies_api.movies.Movie;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,8 +42,4 @@ public class Actor {
     @Pattern(regexp = "(19|20)\\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])", message = "Please enter a valid date in yyyy-MM-dd format")
     private String birthDate;
 
-        public Actor(String name, LocalDate birthDate) {
-        this.name = name;
-        this.birthDate = birthDate.toString();
-    }
 }

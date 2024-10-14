@@ -3,7 +3,6 @@ package kmdb.movies_api.genres;
 import jakarta.transaction.Transactional;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
-import kmdb.movies_api.movies.MovieRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,7 +18,7 @@ public class GenreService {
 
     private final GenreRepository genreRepository;
 
-    public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
+    public GenreService(GenreRepository genreRepository) {
         this.genreRepository = genreRepository;
     }
 

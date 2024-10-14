@@ -37,7 +37,5 @@ public class Genre {
    @Setter
    private Set<Movie> movies = new HashSet<>();
 
-   public Genre (String name) {
-       this.name = name;
-   }
+
 }
