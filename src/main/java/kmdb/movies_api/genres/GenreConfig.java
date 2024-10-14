@@ -1,3 +1,4 @@
+/*
 package kmdb.movies_api.genres;
 
 import org.springframework.boot.CommandLineRunner;
@@ -37,3 +38,4 @@ public class GenreConfig {
         };
     }
 }
+*/

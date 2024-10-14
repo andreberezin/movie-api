@@ -1,3 +1,4 @@
+/*
 package kmdb.movies_api.movies;
 
 import org.springframework.boot.CommandLineRunner;
@@ -34,3 +35,4 @@ public class MovieConfig {
         };
     }
 }
+*/

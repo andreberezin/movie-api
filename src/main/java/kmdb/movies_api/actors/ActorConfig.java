@@ -1,3 +1,4 @@
+/*
 package kmdb.movies_api.actors;
 
 import org.springframework.boot.CommandLineRunner;
@@ -58,3 +59,4 @@ public class ActorConfig {
             };
         }
 }
+*/
