@@ -12,6 +12,8 @@ import kmdb.movies_api.genres.GenreRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -85,6 +87,10 @@ public class MovieService {
     // filter movies by title
     public List<Movie> findMoviesByTitle(String title) {
         Specification<Movie> spec = titleContains(title);
+
+        if (movieRepository.findAll().isEmpty()) { // in case no movies are found
+            throw new ResourceNotFoundException("No movies found");
+        }
 
         if (movieRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
             throw new ResourceNotFoundException("Movie with title containing '" + title + "' does not exist");
@@ -160,13 +166,14 @@ public class MovieService {
     }
 
     // add movie
-    public void addMovie(Movie movie) {
+    public ResponseEntity<String> addMovie(Movie movie) {
         Optional<Movie> movieOptional = movieRepository
                 .findByTitle(movie.getTitle());
         if(movieOptional.isPresent()) {
             throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' already exists in database");
         }
         movieRepository.save(movie);
+        return new ResponseEntity<>("Movie '" + movie.getTitle() + "' added successfully", HttpStatus.CREATED);
     }
 
     // delete movie
@@ -174,11 +181,12 @@ public class MovieService {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
-        movieRepository.findById(movieId)
+        Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
         movieRepository.deleteById(movieId);
     }
+
     // update movie
     @Transactional
     public void updateMovie(Long movieId, String title, @Valid @RequestBody int releaseYear, @Valid @RequestBody int duration) {

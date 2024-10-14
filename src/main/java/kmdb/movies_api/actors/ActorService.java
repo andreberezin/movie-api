@@ -6,6 +6,8 @@ import kmdb.movies_api.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,6 +57,10 @@ public class ActorService {
     public List<Actor> findActorsByName(String name) {
         Specification<Actor> spec = nameContains(name);
 
+        if (actorRepository.findAll().isEmpty()) { // in case no movies are found
+            throw new ResourceNotFoundException("No actors found");
+        }
+
         if (actorRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
             throw new ResourceNotFoundException("Actor with name containing '" + name + "' does not exist");
         }
@@ -63,13 +69,14 @@ public class ActorService {
     }
 
     // add actor
-    public void addActor(Actor actor) {
+    public ResponseEntity<String> addActor(Actor actor) {
         Optional<Actor> actorOptional = actorRepository
                 .findByName(actor.getName());
         if(actorOptional.isPresent()) {
                     throw new ResourceAlreadyExistsException("Actor '" + actor.getName() + "' already exists");
         }
         actorRepository.save(actor);
+        return new ResponseEntity<>("Actor '" + actor.getName() + "' added successfully", HttpStatus.CREATED);
     }
 
     // remove actor
@@ -84,7 +91,6 @@ public class ActorService {
 
         if (force) { // if force is true then delete resource regardless of relationships
             actorRepository.deleteById(actorId);
-            return;
         }
 
         if (numOfMovies > 0) { // if force is false and relationships exist then return exception

@@ -2,6 +2,7 @@ package kmdb.movies_api.actors;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,8 +43,8 @@ public class ActorController {
     // add data
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addActor(@Valid @RequestBody Actor actor) {
-        actorService.addActor(actor);
+    public ResponseEntity<String> addActor(@Valid @RequestBody Actor actor) {
+        return actorService.addActor(actor);
     }
 
     // delete data by id. Also include force parameter in case relationships exist

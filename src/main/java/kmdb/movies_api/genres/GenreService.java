@@ -7,6 +7,8 @@ import kmdb.movies_api.movies.MovieRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +18,9 @@ import java.util.Optional;
 public class GenreService {
 
     private final GenreRepository genreRepository;
-    private final MovieRepository movieRepository;
 
     public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
         this.genreRepository = genreRepository;
-        this.movieRepository = movieRepository;
     }
 
     // get genres by page and page size
@@ -57,6 +57,10 @@ public class GenreService {
     public List<Genre> findGenresByName(String name) {
         Specification<Genre> spec = nameContains(name);
 
+        if (genreRepository.findAll().isEmpty()) { // in case no movies are found
+            throw new ResourceNotFoundException("No genres found");
+        }
+
         if (genreRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
             throw new ResourceNotFoundException("Genre containing '" + name + "' does not exist");
         }
@@ -65,13 +69,14 @@ public class GenreService {
     }
 
     // add a genre
-    public void addGenre(Genre genre) {
+    public ResponseEntity<String> addGenre(Genre genre) {
         Optional<Genre> genreOptional = genreRepository
                 .findByName(genre.getName());
         if(genreOptional.isPresent()) {
             throw new ResourceAlreadyExistsException("Genre '" + genre.getName() + "' already exists in database");
         }
         genreRepository.save(genre);
+        return new ResponseEntity<>("Genre added successfully", HttpStatus.CREATED);
     }
 
     // delete a genre
@@ -87,7 +92,6 @@ public class GenreService {
 
         if (force) { // if force is true then remove all relationships and delete resource
             genreRepository.deleteById(genreId);
-            return;
         }
 
             if (NumOfMovies > 0) { // if force is false and relationships exist then return exception

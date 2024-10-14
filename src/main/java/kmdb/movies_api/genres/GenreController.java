@@ -2,6 +2,7 @@ package kmdb.movies_api.genres;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,9 +43,8 @@ public class GenreController {
 
     // add data
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addGenre(@Valid @RequestBody Genre genre) {
-        genreService.addGenre(genre);
+    public ResponseEntity<String> addGenre(@Valid @RequestBody Genre genre) {
+        return genreService.addGenre(genre);
     }
 
     // delete data by id

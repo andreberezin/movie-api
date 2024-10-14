@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kmdb.movies_api.actors.Actor;
 import kmdb.movies_api.genres.Genre;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,8 +88,8 @@ public class MovieController {
     // add movie
     @PostMapping // add data
     @ResponseStatus(HttpStatus.CREATED)
-    public void addMovie(@Valid @RequestBody Movie movie) {
-        movieService.addMovie(movie);
+    public ResponseEntity<String> addMovie(@Valid @RequestBody Movie movie) {
+        return movieService.addMovie(movie);
     }
 
     // delete movie
@@ -110,6 +111,7 @@ public class MovieController {
 
     // assign genres to movies
     @PutMapping("/{movieId}/genres/{genreId}")
+    @ResponseStatus(HttpStatus.OK)
     Movie assignGenresToMovies(
             @PathVariable Long movieId,
             @PathVariable Long genreId) {
@@ -118,6 +120,7 @@ public class MovieController {
 
     // remove assigned genres from movies
     @DeleteMapping("/{movieId}/genres/{genreId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeGenreFromMovie(
             @PathVariable Long movieId,
             @PathVariable Long genreId) {
@@ -126,6 +129,7 @@ public class MovieController {
 
     // assign actors to movies
     @PutMapping("/{movieId}/actors/{actorsId}")
+    @ResponseStatus(HttpStatus.OK)
     Movie assignActorToMovie(
             @PathVariable Long movieId,
             @PathVariable Long actorsId) {
@@ -134,6 +138,7 @@ public class MovieController {
 
     // remove assigned actors from movies
     @DeleteMapping("/{movieId}/actors/{actorsId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeActorFromMovie(
             @PathVariable Long movieId,
             @PathVariable Long actorsId) {
