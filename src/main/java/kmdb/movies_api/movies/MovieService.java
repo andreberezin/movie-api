@@ -1,5 +1,6 @@
 package kmdb.movies_api.movies;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import kmdb.movies_api.actors.Actor;
@@ -140,6 +141,22 @@ public class MovieService {
         }
 
         return movie.getActors();
+    }
+
+    // finds genres associated to movie
+    public Set<Genre> getGenresInMovie(Long movieId) {
+        if (movieId < 1) {
+            throw new IllegalArgumentException("Movie ID must be greater than 0");
+        }
+
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
+
+        if (movie.getGenres().isEmpty()) {
+            throw new ResourceNotFoundException("No Genres associated with movie '" + movie.getTitle() + "'");
+        }
+
+        return movie.getGenres();
     }
 
     // add movie

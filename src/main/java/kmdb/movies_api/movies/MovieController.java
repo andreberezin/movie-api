@@ -2,6 +2,7 @@ package kmdb.movies_api.movies;
 
 import jakarta.validation.Valid;
 import kmdb.movies_api.actors.Actor;
+import kmdb.movies_api.genres.Genre;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,6 +74,14 @@ public class MovieController {
     public Set<Actor> getActorsInMovie(
             @PathVariable Long movieId) {
         return movieService.getActorsInMovie(movieId);
+    }
+
+    // get genres associated to a movie
+    @GetMapping("/{movieId}/genres")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<Genre> getGenresInMovie(
+            @PathVariable Long movieId) {
+        return movieService.getGenresInMovie(movieId);
     }
 
     // add movie

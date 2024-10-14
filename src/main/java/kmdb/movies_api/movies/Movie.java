@@ -1,5 +1,7 @@
 package kmdb.movies_api.movies;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kmdb.movies_api.actors.Actor;
@@ -30,12 +32,10 @@ public class Movie {
     @NotBlank(message = "Title cannot be empty")
     private String title;
 
-    // TODO whats a better min and max value for this
     @Min(value = 0, message = "Movie release year must be between 0 and 2300")
     @Max(value = 2300, message = "Movie release year must be between 0 and 2300")
     private int releaseYear;
 
-    // TODO whats a better min and max value for this
     @Min(value = 0, message = "Movie duration must be between 0 and 1000 minutes")
     @Max(value = 1000, message = "Movie duration must be between 0 and 1000 minutes")
     private int duration;

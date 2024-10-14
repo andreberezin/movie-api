@@ -35,17 +35,12 @@ public class GenreService {
     }
 
     // get genre by id
-    // TODO figure out how to include associated movies when getting genres from database - doesn't work
     public Genre getGenreById(Long genreId) {
         if (genreId < 1) {
             throw new IllegalArgumentException("Genre ID must be greater than 0");
         }
-        Genre genre = genreRepository.findById(genreId)
+        return genreRepository.findById(genreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
-
-        genre.setMovies(movieRepository.findAllByGenresContains(genre));
-
-        return genre;
     }
 
     // check if there are any genres that match the given name
