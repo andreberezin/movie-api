@@ -41,21 +41,23 @@ public class Movie {
     private int duration;
 
     // ManyToMany mapping between movies and actors
-    @Getter
+
     @ManyToMany
     @JoinTable (
             name = "actors",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id"))
+    @Getter
     private Set<Actor> actors = new HashSet<>();
 
     // ManyToMany mapping between movies and genres
-    @Getter
+
     @ManyToMany
     @JoinTable (
             name = "genres",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"  ))
+    @Getter
     private Set<Genre> genres = new HashSet<>();
 
     public Movie(String title, int releaseYear, int duration) {
@@ -78,5 +80,10 @@ public class Movie {
 
     public void removeGenre(Genre genre) {
         genres.remove(genre);
+    }
+
+    // Constructor with int argument
+    public Movie(Set<Genre> genres) {
+        this.genres = genres;
     }
 }

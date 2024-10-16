@@ -37,5 +37,12 @@ public class Genre {
    @Setter
    private Set<Movie> movies = new HashSet<>();
 
+   // Constructor with int argument
+   public Genre(int id) {
+      this.id = (long) id;
+   }
 
+   public Genre(String name) {
+      this.name = name;
+   }
 }

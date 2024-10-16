@@ -8,6 +8,7 @@ import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
 import kmdb.movies_api.genres.Genre;
 import kmdb.movies_api.genres.GenreRepository;
+import kmdb.movies_api.genres.GenreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,8 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,112 +29,86 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final ActorRepository actorRepository;
+    private final GenreService genreService;
 
-    public MovieService(MovieRepository movieRepository, GenreRepository genreRepository, ActorRepository actorRepository) {
+    public MovieService(MovieRepository movieRepository, GenreRepository genreRepository, ActorRepository actorRepository, GenreService genreService) {
         this.movieRepository = movieRepository;
         this.genreRepository = genreRepository;
         this.actorRepository = actorRepository;
+        this.genreService = genreService;
+    }
+
+    // get number of movies
+    public String getMovieCount() {
+        return "Movies in database: " + movieRepository.count();
     }
 
     // get movies by page and page size
-    public List<Movie> getMoviesByPage(int page, int size) {
+    public Optional<List<Movie>> getMoviesByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Movie> moviesPage = movieRepository.findAll(pageable);
         List<Movie> moviesList = moviesPage.getContent();
-        if (moviesList.isEmpty()) {
-            throw new ResourceNotFoundException("No movies found on page " + page);
-        }
-        return moviesList;
+
+        // method #1
+        return Optional.ofNullable(Optional.of(moviesList)
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new ResourceNotFoundException("No movies found on page " + page)));
     }
 
     // get movies by release year
-    public List<Movie> getMoviesByReleaseYear(int releaseYear) {
-        List<Movie> moviesList = movieRepository.findAll();
-
+    public Optional<List<Movie>> getMoviesByReleaseYear(int releaseYear) {
         if (releaseYear < 0 || releaseYear > 2300) {
             throw new IllegalArgumentException("Release year must be between 0 and 2300");
         }
 
-        moviesList = moviesList.stream()
-                .filter(movie -> movie.getReleaseYear() == releaseYear)
-                .collect(Collectors.toList());
+        List<Movie> moviesList = movieRepository.findAll();
 
-        if (moviesList.isEmpty()) {
-            throw new ResourceNotFoundException("No movies found with release year " + releaseYear);
-        }
-        return moviesList;
+        return Optional.ofNullable(Optional.of(moviesList.stream()
+                        .filter(movie -> movie.getReleaseYear() == releaseYear)
+                        .collect(Collectors.toList()))
+                        .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new ResourceNotFoundException("No movies found with release year " + releaseYear)));
+
     }
 
     // get movies by id
-    public Movie getMovieById(Long movieId) {
+    public Optional<Movie> getMovieById(Long movieId) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
-        return movieRepository.findById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
+
+        Optional<Movie> movie= movieRepository.findById(movieId);
+        if (movie.isPresent()) {
+            return movie;
+        } else {
+            throw new ResourceNotFoundException("Movie with ID " + movieId + " does not exist");
         }
+    }
 
     // check if there is a match in database for given movie title
     public static Specification<Movie> titleContains(String title) {
         return (root, query, criteriaBuilder) -> {
             if (title == null || title.isEmpty()) {
                 return criteriaBuilder.conjunction(); // Return true if no title is specified
+            } else {
+                return criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%");
             }
-            return criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%");
         };
     }
 
     // filter movies by title
-    public List<Movie> findMoviesByTitle(String title) {
+    public Optional<List<Movie>> findMoviesByTitle(String title) {
         Specification<Movie> spec = titleContains(title);
+        List<Movie> moviesList = movieRepository.findAll(spec);
 
-        if (movieRepository.findAll().isEmpty()) { // in case no movies are found
-            throw new ResourceNotFoundException("No movies found");
-        }
+        return Optional.ofNullable(Optional.of(moviesList)
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with title containing '" + title + "' does not exist")));
 
-        if (movieRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
-            throw new ResourceNotFoundException("Movie with title containing '" + title + "' does not exist");
-        }
-
-        return movieRepository.findAll(spec);
-    }
-
-    // filter movies by genre
-    public List<Movie> getMoviesByGenre(Long genreId) {
-        if (genreId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
-
-        Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
-
-        List<Movie> moviesList = new ArrayList<>(movieRepository.findAllByGenresContains(genre));
-
-        if (moviesList.isEmpty()) {
-            throw new ResourceNotFoundException("No movies found in genre '" + genre.getName() + "'");
-        }
-        return moviesList;
-    }
-
-    // filter movies by actor
-    public List<Movie> getMoviesByActor(Long actorId) {
-        if (actorId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
-
-        Actor actor = actorRepository.findById(actorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
-
-        List<Movie> moviesList = new ArrayList<>(movieRepository.findAllByActorsContains(actor));
-
-        if (moviesList.isEmpty()) {
-            throw new ResourceNotFoundException("No movies found starring actor '" + actor.getName() + "'");
-        }
-        return moviesList;
     }
 
     // finds actors associated to movie
-    public Set<Actor> getActorsInMovie(Long movieId) {
+    public Optional<Set<Actor>> getActorsInMovie(Long movieId) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
@@ -141,15 +116,16 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
-        if (movie.getActors().isEmpty()) {
+        Set<Actor> actorsInMovie = movie.getActors();
+        if (actorsInMovie.isEmpty()) {
             throw new ResourceNotFoundException("No actors associated with movie '" + movie.getTitle() + "'");
         }
 
-        return movie.getActors();
+        return Optional.of(actorsInMovie);
     }
 
     // finds genres associated to movie
-    public Set<Genre> getGenresInMovie(Long movieId) {
+    public Optional<Set<Genre>> getGenresInMovie(Long movieId) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
@@ -157,22 +133,82 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
-        if (movie.getGenres().isEmpty()) {
+        Set<Genre> genresInMovie = movie.getGenres();
+        if (genresInMovie.isEmpty()) {
             throw new ResourceNotFoundException("No Genres associated with movie '" + movie.getTitle() + "'");
+        } else {
+            return Optional.of(genresInMovie);
         }
-
-        return movie.getGenres();
     }
 
-    // add movie
-    public ResponseEntity<String> addMovie(Movie movie) {
+    // add movie (cannot add genres and actors)
+/*    public ResponseEntity<String> addMovie(Movie movie) {
         Optional<Movie> movieOptional = movieRepository
                 .findByTitle(movie.getTitle());
         if(movieOptional.isPresent()) {
             throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' already exists in database");
+        } else {
+            movieRepository.save(movie);
+            return new ResponseEntity<>("Movie '" + movie.getTitle() + "' added successfully", HttpStatus.CREATED);
         }
+    }*/
+
+        // add movies with genre and actor ids
+/*    public void addMovie(String title, int releaseYear, int duration, List<Long> genreIds, List<Long> actorIds) {
+        Movie movie = new Movie(title, releaseYear, duration);
+
+        Set<Genre> genres = genreIds.stream()
+                .map(genreId -> genreRepository.findById(genreId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " not found")))
+                .collect(Collectors.toSet());
+
+        Set<Actor> actors = actorIds.stream()
+                .map(actorId -> actorRepository.findById(actorId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " not found")))
+                .collect(Collectors.toSet());
+
+        movie.setGenres(genres);
+        movie.setActors(actors);
+
         movieRepository.save(movie);
-        return new ResponseEntity<>("Movie '" + movie.getTitle() + "' added successfully", HttpStatus.CREATED);
+    }*/
+
+/*    public void addMovie(String title, int releaseYear, int duration, List<String> genreNames, List<String> actorNames) {
+        Movie movie = new Movie(title, releaseYear, duration);
+
+        Set<Genre> genres = genreNames.stream()
+                .map(genreName -> genreRepository.findByName(genreName)
+                        .orElseThrow(() -> new ResourceNotFoundException("Genre '" + genreName + "' not found")))
+                .collect(Collectors.toSet());
+
+        Set<Actor> actors = actorNames.stream()
+                .map(actorName -> actorRepository.findByName(actorName)
+                        .orElseThrow(() -> new ResourceNotFoundException("Actor '" + actorName + "' not found")))
+                .collect(Collectors.toSet());
+
+        movie.setGenres(genres);
+        movie.setActors(actors);
+
+        movieRepository.save(movie);
+    }*/
+
+    public void addMovie(String title, int releaseYear, int duration, Set<Genre> genres, Set<Actor> actors) {
+        Movie movie = new Movie(title, releaseYear, duration);
+
+        genres = genres.stream()
+                .map(genre -> genreRepository.findByName(genre.getName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Genre '" + genre.getName() + "' not found")))
+                .collect(Collectors.toSet());
+
+        actors = actors.stream()
+                .map(actor -> actorRepository.findByName(actor.getName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Actor '" + actor.getName() + "' not found")))
+                .collect(Collectors.toSet());
+
+        movie.setGenres(genres);
+        movie.setActors(actors);
+
+        movieRepository.save(movie);
     }
 
     // delete movie
@@ -188,7 +224,7 @@ public class MovieService {
 
     // update movie
     @Transactional
-    public void updateMovie(Long movieId, String title, @Valid @RequestBody int releaseYear, @Valid @RequestBody int duration) {
+    public void updateMovie(Long movieId, String title, int releaseYear, int duration, Set<Genre> genres, Set<Actor> actors ) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
@@ -201,12 +237,32 @@ public class MovieService {
             movie.setTitle(title);
         }
 
-           if (releaseYear > 0) { // update only non-null fields
+        if (releaseYear > 0) { // update only non-null fields
             movie.setReleaseYear(releaseYear);
         }
 
         if (duration > 0) { // update only non-null fields
             movie.setDuration(duration);
+        }
+
+        genres = genres.stream()
+                .map(genre -> genreRepository.findByName(genre.getName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Genre '" + genre.getName() + "' not found")))
+                .collect(Collectors.toSet());
+
+        actors = actors.stream()
+                .map(actor -> actorRepository.findByName(actor.getName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Actor '" + actor.getName() + "' not found")))
+                .collect(Collectors.toSet());
+
+        if (!genres.isEmpty()) {
+            movie.getGenres().retainAll(genres); // remove genres not in the new list
+            movie.getGenres().addAll(genres); // add genres in the new list
+        }
+
+        if (!actors.isEmpty()) {
+            movie.getActors().retainAll(actors); // remove actors not in the new list
+            movie.getActors().addAll(actors); // add actors in the new list
         }
     }
 
@@ -219,9 +275,10 @@ public class MovieService {
 
         if (movie.getGenres().contains(genre)) { // check movie has a relationship with genre
             throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' is already associated with genre '" + genre.getName() + "'");
+        } else {
+            movie.setGenre(genre);
+            return movieRepository.save(movie);
         }
-        movie.setGenre(genre);
-        return movieRepository.save(movie);
     }
 
     // remove genres from movies
@@ -233,9 +290,10 @@ public class MovieService {
 
         if (!movie.getGenres().contains(genre)) { // check movie has a relationship with genre
             throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' is not associated with genre '" + genre.getName() + "'");
+        } else {
+            movie.removeGenre(genre);
+            movieRepository.save(movie);
         }
-        movie.removeGenre(genre);
-        movieRepository.save(movie);
     }
 
     // assign actors to movies
@@ -247,9 +305,10 @@ public class MovieService {
 
         if (movie.getActors().contains(actor)) { // check movie has a relationship with actor
             throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' is already associated with actor '" + actor.getName() + "'");
+        } else {
+            movie.setActor(actor);
+            return movieRepository.save(movie);
         }
-        movie.setActor(actor);
-        return movieRepository.save(movie);
     }
 
     // remove actors from movies
@@ -261,8 +320,9 @@ public class MovieService {
 
         if (!movie.getActors().contains(actor)) { // check movie has a relationship with genre
             throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' is not associated with actor '" + actor.getName() + "'");
+        } else {
+            movie.removeActor(actor);
+            movieRepository.save(movie);
         }
-        movie.removeActor(actor);
-        movieRepository.save(movie);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/genres")
@@ -17,10 +18,17 @@ public class GenreController {
         this.genreService = genreService;
     }
 
+    // get number of genres
+    @GetMapping(params = "count")
+    @ResponseStatus(HttpStatus.OK)
+    public String getGenreCount() {
+        return genreService.getGenreCount();
+    }
+
     // retrieve data by page and page size
     @GetMapping(params = { "page", "size"})
     @ResponseStatus(HttpStatus.OK)
-    public List<Genre> getGenresByPage(
+    public Optional<List<Genre>> getGenresByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         return genreService.getGenresByPage(page, size);
@@ -29,7 +37,7 @@ public class GenreController {
     // retrieve data one by one using id as parameter
     @GetMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.OK)
-    public Genre getGenreById(
+    public Optional<Genre> getGenreById(
             @PathVariable Long genreId) {
         return genreService.getGenreById(genreId);
     }
@@ -37,7 +45,7 @@ public class GenreController {
     //retrieve data by name or retrieve all if a parameter isn't given
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Genre> findGenresByName(@RequestParam(required = false) String name) {
+    public Optional<List<Genre>> findGenresByName(@RequestParam(required = false) String name) {
         return genreService.findGenresByName(name);
     }
 
@@ -58,7 +66,7 @@ public class GenreController {
 
     // modify data by id
     @PatchMapping(path = "{genreId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void updateGenre(
             @PathVariable("genreId") Long genreId,
             @Valid @RequestBody Genre request) {

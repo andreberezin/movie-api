@@ -2,28 +2,43 @@ package kmdb.movies_api.movies;
 
 import jakarta.validation.Valid;
 import kmdb.movies_api.actors.Actor;
+import kmdb.movies_api.actors.ActorService;
 import kmdb.movies_api.genres.Genre;
+import kmdb.movies_api.genres.GenreService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "api/movies")
 public class MovieController {
 
     private final MovieService movieService;
+    private final ActorService actorService;
+    private final GenreService genreService;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService, ActorService actorService, GenreService genreService) {
         this.movieService = movieService;
+        this.actorService = actorService;
+        this.genreService = genreService;
+    }
+
+    // get number of movies
+    @GetMapping(params = "count")
+    @ResponseStatus(HttpStatus.OK)
+    public String getMovieCount() {
+        return movieService.getMovieCount();
     }
 
     // get movies by page and page size
     @GetMapping(params = { "page", "size"})
     @ResponseStatus(HttpStatus.OK)
-    public List<Movie> getMoviesByPage(
+    public Optional<List<Movie>> getMoviesByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         return movieService.getMoviesByPage(page, size);
@@ -32,7 +47,7 @@ public class MovieController {
     // get movie by release year
     @GetMapping(params = "releaseYear")
     @ResponseStatus(HttpStatus.OK)
-    public List<Movie> getMoviesByReleaseYear(
+    public Optional<List<Movie>> getMoviesByReleaseYear(
             @RequestParam(value = "releaseYear", defaultValue = "", required = false)
             int releaseYear) {
         return movieService.getMoviesByReleaseYear(releaseYear);
@@ -41,7 +56,7 @@ public class MovieController {
     // get data one by one using id as parameter
     @GetMapping(path = "{movieId}")
     @ResponseStatus(HttpStatus.OK)
-    public Movie getMovieById(
+    public Optional<Movie> getMovieById(
             @PathVariable Long movieId) {
         return movieService.getMovieById(movieId);
     }
@@ -49,30 +64,32 @@ public class MovieController {
     // get movies by name or get all if a parameter isn't given
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Movie> findMoviesByTitle(@RequestParam(required = false) String title) {
+    public Optional<List<Movie>> findMoviesByTitle(@RequestParam(required = false) String title) {
         return movieService.findMoviesByTitle(title);
     }
 
     // get movies by genre
     @GetMapping(params = "genre")
     @ResponseStatus(HttpStatus.OK)
-    public List<Movie> getMoviesByGenre(
+    public Optional<List<Movie>> getMoviesByGenre(
             @RequestParam(value = "genre", defaultValue = "", required = false) Long genreId) {
-        return movieService.getMoviesByGenre(genreId);
+        return genreService.getMoviesByGenre(genreId);
     }
 
     // get movies by actor
+    // /api/movies?actor={Actor.id}
     @GetMapping(params = "actor")
     @ResponseStatus(HttpStatus.OK)
-    public List<Movie> getMoviesByActor(
-            @RequestParam(value = "actor", defaultValue = "", required = false) Long actorId) {
-        return movieService.getMoviesByActor(actorId);
+    public Optional<List<Movie>> getMoviesByActor(
+            @RequestParam(value = "actor", defaultValue = "", required = false) Long actorId)
+    {
+        return actorService.getMoviesByActor(actorId);
     }
 
     // get actors in a movie
     @GetMapping("/{movieId}/actors")
     @ResponseStatus(HttpStatus.OK)
-    public Set<Actor> getActorsInMovie(
+    public Optional<Set<Actor>> getActorsInMovie(
             @PathVariable Long movieId) {
         return movieService.getActorsInMovie(movieId);
     }
@@ -80,16 +97,31 @@ public class MovieController {
     // get genres associated to a movie
     @GetMapping("/{movieId}/genres")
     @ResponseStatus(HttpStatus.OK)
-    public Set<Genre> getGenresInMovie(
+    public Optional<Set<Genre>> getGenresInMovie(
             @PathVariable Long movieId) {
         return movieService.getGenresInMovie(movieId);
     }
 
     // add movie
+/*    @PostMapping // add data
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addMovie(@Valid @RequestBody Movie movie) {
+        movieService.addMovie(movie);
+    }*/
+
+/*    @PostMapping // add data
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addMovie(@Valid @RequestBody Movie movie) {
+        movieService.addMovie(movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
+                movie.getGenres().stream().map(Genre::getName).collect(Collectors.toList()),
+                movie.getActors().stream().map(Actor::getName).collect(Collectors.toList()));
+    }*/
+
     @PostMapping // add data
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> addMovie(@Valid @RequestBody Movie movie) {
-        return movieService.addMovie(movie);
+    public void addMovie(@Valid @RequestBody Movie movie) {
+        movieService.addMovie(movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
+                movie.getGenres(), movie.getActors());
     }
 
     // delete movie
@@ -102,17 +134,18 @@ public class MovieController {
 
     // update movie
     @PatchMapping(path = "{movieId}") // modify data by id
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void updateMovie(
             @PathVariable("movieId") Long movieId,
-            @RequestBody Movie request) {
-        movieService.updateMovie(movieId, request.getTitle(), request.getReleaseYear(), request.getDuration());
+            @Valid @RequestBody Movie movie) {
+        movieService.updateMovie(movieId, movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
+                movie.getGenres(), movie.getActors());
     }
 
     // assign genres to movies
     @PutMapping("/{movieId}/genres/{genreId}")
     @ResponseStatus(HttpStatus.OK)
-    Movie assignGenresToMovies(
+    public Movie assignGenresToMovies(
             @PathVariable Long movieId,
             @PathVariable Long genreId) {
         return movieService.assignGenresToMovies(movieId, genreId);
@@ -130,7 +163,7 @@ public class MovieController {
     // assign actors to movies
     @PutMapping("/{movieId}/actors/{actorsId}")
     @ResponseStatus(HttpStatus.OK)
-    Movie assignActorToMovie(
+    public Movie assignActorToMovie(
             @PathVariable Long movieId,
             @PathVariable Long actorsId) {
         return movieService.assignActorToMovie(movieId, actorsId);

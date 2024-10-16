@@ -3,6 +3,8 @@ package kmdb.movies_api.genres;
 import jakarta.transaction.Transactional;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
+import kmdb.movies_api.movies.Movie;
+import kmdb.movies_api.movies.MovieRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,29 +20,40 @@ import java.util.Optional;
 public class GenreService {
 
     private final GenreRepository genreRepository;
+    private final MovieRepository movieRepository;
 
-    public GenreService(GenreRepository genreRepository) {
+    public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
         this.genreRepository = genreRepository;
+        this.movieRepository = movieRepository;
+    }
+
+    // get number of genres
+    public String getGenreCount() {
+        return "Genres in database: " + genreRepository.count();
     }
 
     // get genres by page and page size
-    public List<Genre> getGenresByPage(int page, int size) {
+    public Optional<List<Genre>> getGenresByPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Genre> genresPage = genreRepository.findAll(pageable);
         List<Genre> genresList = genresPage.getContent();
         if (genresList.isEmpty()) {
             throw new ResourceNotFoundException("No genres found on page " + page);
         }
-        return genresList;
+        return Optional.of(genresList);
     }
 
     // get genre by id
-    public Genre getGenreById(Long genreId) {
+    public Optional<Genre> getGenreById(Long genreId) {
         if (genreId < 1) {
             throw new IllegalArgumentException("Genre ID must be greater than 0");
         }
-        return genreRepository.findById(genreId)
-                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
+        Optional<Genre> genre = genreRepository.findById(genreId);
+        if (genre.isPresent()) {
+            return genre;
+        } else {
+            throw new ResourceNotFoundException("Genre with ID " + genreId + " does not exist");
+        }
     }
 
     // check if there are any genres that match the given name
@@ -53,18 +67,32 @@ public class GenreService {
     }
 
     // filter genres by name
-    public List<Genre> findGenresByName(String name) {
+    public Optional<List<Genre>> findGenresByName(String name) {
         Specification<Genre> spec = nameContains(name);
+        List<Genre> genresList = genreRepository.findAll(spec);
 
-        if (genreRepository.findAll().isEmpty()) { // in case no movies are found
-            throw new ResourceNotFoundException("No genres found");
-        }
-
-        if (genreRepository.findAll(spec).isEmpty()) { // in case no movie matches given title
+        if (genresList.isEmpty()) { // in case no movie matches given title
             throw new ResourceNotFoundException("Genre containing '" + name + "' does not exist");
         }
 
-        return genreRepository.findAll(spec);
+        return Optional.of(genresList);
+    }
+
+    // filter movies by genre
+    public Optional<List<Movie>> getMoviesByGenre(Long genreId) {
+        if (genreId < 1) {
+            throw new IllegalArgumentException("Genre ID must be greater than 0");
+        }
+
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
+
+        List<Movie> moviesList = new ArrayList<>(movieRepository.findAllByGenresContains(genre));
+
+        if (moviesList.isEmpty()) {
+            throw new ResourceNotFoundException("No movies found in genre '" + genre.getName() + "'");
+        }
+        return Optional.of(moviesList);
     }
 
     // add a genre

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/actors")
@@ -17,10 +18,17 @@ public class ActorController {
         this.actorService = actorService;
     }
 
+    // get number of actors
+    @GetMapping(params = "count")
+    @ResponseStatus(HttpStatus.OK)
+    public String getActorCount() {
+        return actorService.getActorCount();
+    }
+
     // get actors by page and page size
     @GetMapping(params = { "page", "size"}) // retrieve by page
     @ResponseStatus(HttpStatus.OK)
-    public List<Actor> getActorsByPage(
+    public Optional<List<Actor>> getActorsByPage(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         return actorService.getActorsByPage(page, size);
@@ -29,16 +37,17 @@ public class ActorController {
     // get actors by id
     @GetMapping(path = "{actorId}") // retrieve data one by one using id as parameter
     @ResponseStatus(HttpStatus.OK)
-    public Actor getActorsById(@PathVariable("actorId") Long actorId) {
+    public Optional<Actor> getActorsById(@PathVariable("actorId") Long actorId) {
         return actorService.getActorById(actorId);
     }
 
     //retrieve data by name or retrieve all if a parameter isn't given
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Actor> findActorsByName(@RequestParam(required = false) String name) {
+    public Optional<List<Actor>> findActorsByName(@RequestParam(required = false) String name) {
         return actorService.findActorsByName(name);
     }
+
 
     // add data
     @PostMapping
@@ -58,7 +67,7 @@ public class ActorController {
 
     // modify data by id
     @PatchMapping(path = "{actorId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void updateActor(
             @PathVariable("actorId") Long actorId,
             @RequestBody Actor request) { // modifying via body
