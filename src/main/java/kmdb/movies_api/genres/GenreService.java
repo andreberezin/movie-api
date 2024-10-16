@@ -103,7 +103,7 @@ public class GenreService {
             throw new ResourceAlreadyExistsException("Genre '" + genre.getName() + "' already exists in database");
         }
         genreRepository.save(genre);
-        return new ResponseEntity<>("Genre added successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Genre '" + genre.getName() + "' added successfully", HttpStatus.CREATED);
     }
 
     // delete a genre
