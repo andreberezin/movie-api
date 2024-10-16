@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>kmdb</groupId>
 	<artifactId>movies_api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>movies_api</name>
 	<description>REST API for managing a movie database</description>
 	<url/>
