@@ -9,7 +9,7 @@ This project is a RESTful API for managing a movie database. It allows users to 
 1. Clone the repository: `git clone https://gitea.kood.tech/andreberezin/kmdb.git`
 2. Navigate to the project directory using `cd` 
 3. Run the application: `java -jar target/movies_api-0.0.1.jar`
-4. End the application: `kill $(lsof -t -i:8080 -sTCP:LISTEN -n | awk '{print $2}')`
+4. End the application: `pkill -f movies_api-0.0.1.jar`
 
 ## 3. Usage Guide
 
