@@ -18,5 +18,6 @@ https://www.postman.com/andreberezin/kmdb/collection/6vs7gbp/movie-database-api?
 The workspace contains collections for testing different endpoints, such as creating, reading, updating, and deleting movies, actors, and genres.
 
 ## 4. Any Additional Features or Bonus Functionality Implemented
+- Functionality for getting the number of movies, actors and genres in database
 - Search functionality for finding movies by partial title, actors by partial name and genres by partial name.
 - Pagination functionality for GET requests to retrieve movies, genres and actors by page number and page size.
