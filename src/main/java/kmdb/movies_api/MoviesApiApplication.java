@@ -26,5 +26,3 @@ public class MoviesApiApplication {
 // TODO Student can explain the purpose of the application.properties file in a Spring Boot project.
 // TODO Ask the student to explain the contents of application.properties file for SQLite configuration
 // TODO SQLite JDBC driver dependency with the correct version is added in pom.xml.
-
-// TODO A new movie with associated genre and actors can be created in a single POST request.

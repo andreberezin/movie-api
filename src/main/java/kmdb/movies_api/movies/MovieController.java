@@ -106,22 +106,15 @@ public class MovieController {
 /*    @PostMapping // add data
     @ResponseStatus(HttpStatus.CREATED)
     public void addMovie(@Valid @RequestBody Movie movie) {
-        movieService.addMovie(movie);
-    }*/
-
-/*    @PostMapping // add data
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addMovie(@Valid @RequestBody Movie movie) {
-        movieService.addMovie(movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
-                movie.getGenres().stream().map(Genre::getName).collect(Collectors.toList()),
-                movie.getActors().stream().map(Actor::getName).collect(Collectors.toList()));
-    }*/
-
-    @PostMapping // add data
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addMovie(@Valid @RequestBody Movie movie) {
         movieService.addMovie(movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
                 movie.getGenres(), movie.getActors());
+    }*/
+
+    // add movie
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> addMovie(@Valid @RequestBody Movie movie) {
+        return movieService.addMovie(movie);
     }
 
     // delete movie

@@ -1,7 +1,5 @@
 package kmdb.movies_api.movies;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import kmdb.movies_api.actors.Actor;
@@ -74,15 +72,12 @@ public class Movie {
         actors.remove(actor);
     }
 
-    public void setGenre(Genre genre) {
-        genres.add(genre);
-    }
+    public void setGenre(Genre genre) { genres.add(genre);}
 
     public void removeGenre(Genre genre) {
         genres.remove(genre);
     }
 
-    // Constructor with int argument
     public Movie(Set<Genre> genres) {
         this.genres = genres;
     }

@@ -1,22 +1,18 @@
 package kmdb.movies_api.movies;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import kmdb.movies_api.actors.Actor;
 import kmdb.movies_api.actors.ActorRepository;
 import kmdb.movies_api.exception.ResourceAlreadyExistsException;
 import kmdb.movies_api.exception.ResourceNotFoundException;
 import kmdb.movies_api.genres.Genre;
 import kmdb.movies_api.genres.GenreRepository;
-import kmdb.movies_api.genres.GenreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,13 +25,11 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final ActorRepository actorRepository;
-    private final GenreService genreService;
 
-    public MovieService(MovieRepository movieRepository, GenreRepository genreRepository, ActorRepository actorRepository, GenreService genreService) {
+    public MovieService(MovieRepository movieRepository, GenreRepository genreRepository, ActorRepository actorRepository) {
         this.movieRepository = movieRepository;
         this.genreRepository = genreRepository;
         this.actorRepository = actorRepository;
-        this.genreService = genreService;
     }
 
     // get number of movies
@@ -141,66 +135,21 @@ public class MovieService {
         }
     }
 
-    // add movie (cannot add genres and actors)
-/*    public ResponseEntity<String> addMovie(Movie movie) {
+    // add movie
+    public ResponseEntity<String> addMovie(Movie movie) {
         Optional<Movie> movieOptional = movieRepository
                 .findByTitle(movie.getTitle());
+
         if(movieOptional.isPresent()) {
-            throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' already exists in database");
-        } else {
-            movieRepository.save(movie);
-            return new ResponseEntity<>("Movie '" + movie.getTitle() + "' added successfully", HttpStatus.CREATED);
-        }
-    }*/
+            throw new ResourceAlreadyExistsException("Movie '" + movie.getTitle() + "' already exists");
+            }
 
-        // add movies with genre and actor ids
-/*    public void addMovie(String title, int releaseYear, int duration, List<Long> genreIds, List<Long> actorIds) {
-        Movie movie = new Movie(title, releaseYear, duration);
-
-        Set<Genre> genres = genreIds.stream()
-                .map(genreId -> genreRepository.findById(genreId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " not found")))
-                .collect(Collectors.toSet());
-
-        Set<Actor> actors = actorIds.stream()
-                .map(actorId -> actorRepository.findById(actorId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " not found")))
-                .collect(Collectors.toSet());
-
-        movie.setGenres(genres);
-        movie.setActors(actors);
-
-        movieRepository.save(movie);
-    }*/
-
-/*    public void addMovie(String title, int releaseYear, int duration, List<String> genreNames, List<String> actorNames) {
-        Movie movie = new Movie(title, releaseYear, duration);
-
-        Set<Genre> genres = genreNames.stream()
-                .map(genreName -> genreRepository.findByName(genreName)
-                        .orElseThrow(() -> new ResourceNotFoundException("Genre '" + genreName + "' not found")))
-                .collect(Collectors.toSet());
-
-        Set<Actor> actors = actorNames.stream()
-                .map(actorName -> actorRepository.findByName(actorName)
-                        .orElseThrow(() -> new ResourceNotFoundException("Actor '" + actorName + "' not found")))
-                .collect(Collectors.toSet());
-
-        movie.setGenres(genres);
-        movie.setActors(actors);
-
-        movieRepository.save(movie);
-    }*/
-
-    public void addMovie(String title, int releaseYear, int duration, Set<Genre> genres, Set<Actor> actors) {
-        Movie movie = new Movie(title, releaseYear, duration);
-
-        genres = genres.stream()
+        Set<Genre> genres = movie.getGenres().stream()
                 .map(genre -> genreRepository.findByName(genre.getName())
                         .orElseThrow(() -> new ResourceNotFoundException("Genre '" + genre.getName() + "' not found")))
                 .collect(Collectors.toSet());
 
-        actors = actors.stream()
+        Set<Actor> actors = movie.getActors().stream()
                 .map(actor -> actorRepository.findByName(actor.getName())
                         .orElseThrow(() -> new ResourceNotFoundException("Actor '" + actor.getName() + "' not found")))
                 .collect(Collectors.toSet());
@@ -209,6 +158,7 @@ public class MovieService {
         movie.setActors(actors);
 
         movieRepository.save(movie);
+        return new ResponseEntity<>("Movie '" + movie.getTitle() + "' added successfully", HttpStatus.CREATED);
     }
 
     // delete movie
@@ -228,10 +178,9 @@ public class MovieService {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
+
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Movie with ID " + movieId + " does not exist in database"
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist in database"));
 
         if (title != null && !title.isEmpty()) { // update only non-null fields
             movie.setTitle(title);
@@ -265,6 +214,7 @@ public class MovieService {
             movie.getActors().addAll(actors); // add actors in the new list
         }
     }
+
 
     // assign genres to movies
     public Movie assignGenresToMovies(Long movieId, Long genreId) {
