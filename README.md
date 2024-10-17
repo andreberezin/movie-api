@@ -9,18 +9,22 @@ This project is a RESTful API for managing a movie database. It allows users to 
 1. Clone the repository: `git clone https://gitea.kood.tech/andreberezin/kmdb.git`
 2. Navigate to the project directory using `cd` 
 3. Build the application with all dependencies: `mvn package`
-    - In case "command not found: mvn" \
+   * In case "command not found: mvn" \
        install Maven: https://maven.apache.org/install.html \
        or on MacOs/Linux use brew for installation: `brew install maven`
 4. Run the application: `java -jar target/movies_api-0.0.1.jar`
 5. End the application: `pkill -f movies_api-0.0.1.jar`
 
 ## 3. Usage Guide
+* To test the API, you can use the provided Postman workspace: \
+    https://www.postman.com/andreberezin/kmdb/collection/6vs7gbp/movie-database-api?action=share&creator=38674842 \
+    The workspace contains collections for testing different endpoints, such as creating, reading, updating, and deleting movies, actors, and genres.
+  &nbsp;
 
-To test the API, you can use the provided Postman workspace:
-https://www.postman.com/andreberezin/kmdb/collection/6vs7gbp/movie-database-api?action=share&creator=38674842
 
-The workspace contains collections for testing different endpoints, such as creating, reading, updating, and deleting movies, actors, and genres.
+ * Also you can use the added springdoc-openapi dependency by going to: \
+    `http://localhost:8080/swagger-ui/index.html#/` \
+    This will allow you to see which paths and parameters are expected
 
 ## 4. Any Additional Features or Bonus Functionality Implemented
 - Functionality for getting the number of movies, actors and genres in database
