@@ -28,5 +28,6 @@ This project is a RESTful API for managing a movie database. It allows users to 
 
 ## 4. Any Additional Features or Bonus Functionality Implemented
 - Functionality for getting the number of movies, actors and genres in database
-- Search functionality for finding movies by partial title, actors by partial name and genres by partial name.
+- Case-insensitive search functionality for finding movies by partial title, actors by partial name and genres by partial name.
 - Pagination functionality for GET requests to retrieve movies, genres and actors by page number and page size.
+- Added springdoc-openapi dependency so Swagger UI can be used to see expected paths, parameters and test the API.
