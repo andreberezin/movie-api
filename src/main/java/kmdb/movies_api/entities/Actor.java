@@ -1,10 +1,9 @@
-package kmdb.movies_api.actors;
+package kmdb.movies_api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import kmdb.movies_api.movies.Movie;
 import lombok.*;
 
 import java.util.HashSet;

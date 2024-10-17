@@ -1,9 +1,11 @@
-package kmdb.movies_api.actors;
+package kmdb.movies_api.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
+import kmdb.movies_api.services.ActorService;
+import kmdb.movies_api.entities.Actor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

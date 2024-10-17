@@ -1,10 +1,12 @@
-package kmdb.movies_api.actors;
+package kmdb.movies_api.services;
 
 import jakarta.transaction.Transactional;
+import kmdb.movies_api.entities.Actor;
 import kmdb.movies_api.exceptions.ResourceAlreadyExistsException;
 import kmdb.movies_api.exceptions.ResourceNotFoundException;
-import kmdb.movies_api.movies.Movie;
-import kmdb.movies_api.movies.MovieRepository;
+import kmdb.movies_api.entities.Movie;
+import kmdb.movies_api.repositories.MovieRepository;
+import kmdb.movies_api.repositories.ActorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

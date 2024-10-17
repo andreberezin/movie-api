@@ -1,9 +1,7 @@
-package kmdb.movies_api.movies;
+package kmdb.movies_api.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import kmdb.movies_api.actors.Actor;
-import kmdb.movies_api.genres.Genre;
 import lombok.*;
 
 import java.util.HashSet;
