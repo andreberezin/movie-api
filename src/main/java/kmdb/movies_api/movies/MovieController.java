@@ -1,20 +1,25 @@
 package kmdb.movies_api.movies;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import kmdb.movies_api.actors.Actor;
 import kmdb.movies_api.actors.ActorService;
 import kmdb.movies_api.genres.Genre;
 import kmdb.movies_api.genres.GenreService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
+@Validated
 @RequestMapping(path = "api/movies")
 public class MovieController {
 
@@ -22,10 +27,18 @@ public class MovieController {
     private final ActorService actorService;
     private final GenreService genreService;
 
+   @Autowired
     public MovieController(MovieService movieService, ActorService actorService, GenreService genreService) {
         this.movieService = movieService;
         this.actorService = actorService;
         this.genreService = genreService;
+    }
+
+    // get all movies
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Optional<List<Movie>> getAllMovies() {
+        return movieService.getAllMovies();
     }
 
     // get number of movies
@@ -39,7 +52,11 @@ public class MovieController {
     @GetMapping(params = { "page", "size"})
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Movie>> getMoviesByPage(
+            @Min(value = 0, message = "Page index must not be less than zero")
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+
+            @Min(value = 0, message = "Page size must not be less than one")
+            @Max(value = 100, message = "Page size limit is 100")
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         return movieService.getMoviesByPage(page, size);
     }
@@ -57,12 +74,12 @@ public class MovieController {
     @GetMapping(path = "{movieId}")
     @ResponseStatus(HttpStatus.OK)
     public Optional<Movie> getMovieById(
-            @PathVariable Long movieId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0") Long movieId) {
         return movieService.getMovieById(movieId);
     }
 
     // get movies by name or get all if a parameter isn't given
-    @GetMapping
+    @GetMapping(path = "/search")
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Movie>> findMoviesByTitle(@RequestParam(required = false) String title) {
         return movieService.findMoviesByTitle(title);
@@ -72,7 +89,8 @@ public class MovieController {
     @GetMapping(params = "genre")
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Movie>> getMoviesByGenre(
-            @RequestParam(value = "genre", defaultValue = "", required = false) Long genreId) {
+            @RequestParam(value = "genre", defaultValue = "", required = false)
+            @Positive(message = "Genre ID must be greater than 0") Long genreId) {
         return genreService.getMoviesByGenre(genreId);
     }
 
@@ -81,7 +99,8 @@ public class MovieController {
     @GetMapping(params = "actor")
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Movie>> getMoviesByActor(
-            @RequestParam(value = "actor", defaultValue = "", required = false) Long actorId)
+            @RequestParam(value = "actor", defaultValue = "", required = false)
+            @Positive(message = "Actor ID must be greater than 0") Long actorId)
     {
         return actorService.getMoviesByActor(actorId);
     }
@@ -90,7 +109,7 @@ public class MovieController {
     @GetMapping("/{movieId}/actors")
     @ResponseStatus(HttpStatus.OK)
     public Optional<Set<Actor>> getActorsInMovie(
-            @PathVariable Long movieId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0") Long movieId) {
         return movieService.getActorsInMovie(movieId);
     }
 
@@ -98,17 +117,9 @@ public class MovieController {
     @GetMapping("/{movieId}/genres")
     @ResponseStatus(HttpStatus.OK)
     public Optional<Set<Genre>> getGenresInMovie(
-            @PathVariable Long movieId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0") Long movieId) {
         return movieService.getGenresInMovie(movieId);
     }
-
-    // add movie
-/*    @PostMapping // add data
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addMovie(@Valid @RequestBody Movie movie) {
-        movieService.addMovie(movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
-                movie.getGenres(), movie.getActors());
-    }*/
 
     // add movie
     @PostMapping
@@ -118,18 +129,19 @@ public class MovieController {
     }
 
     // delete movie
-    @DeleteMapping(path = "{movieId}") // delete data by id
+    @DeleteMapping(path = "{movieId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(
-            @PathVariable("movieId") Long movieId) {
-        movieService.deleteMovie(movieId);
+            @PathVariable("movieId") @Positive(message = "Movie ID must be greater than 0") Long movieId,
+            @RequestParam(value = "force", defaultValue = "false", required = false) boolean force) {
+        movieService.deleteMovie(movieId, force);
     }
 
     // update movie
     @PatchMapping(path = "{movieId}") // modify data by id
     @ResponseStatus(HttpStatus.OK)
     public void updateMovie(
-            @PathVariable("movieId") Long movieId,
+            @PathVariable("movieId") @Positive(message = "Movie ID must be greater than 0") Long movieId,
             @Valid @RequestBody Movie movie) {
         movieService.updateMovie(movieId, movie.getTitle(), movie.getReleaseYear(), movie.getDuration(),
                 movie.getGenres(), movie.getActors());
@@ -139,8 +151,8 @@ public class MovieController {
     @PutMapping("/{movieId}/genres/{genreId}")
     @ResponseStatus(HttpStatus.OK)
     public Movie assignGenresToMovies(
-            @PathVariable Long movieId,
-            @PathVariable Long genreId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0") Long movieId,
+            @PathVariable @Positive(message = "Genre ID must be greater than 0") Long genreId) {
         return movieService.assignGenresToMovies(movieId, genreId);
     }
 
@@ -148,8 +160,8 @@ public class MovieController {
     @DeleteMapping("/{movieId}/genres/{genreId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeGenreFromMovie(
-            @PathVariable Long movieId,
-            @PathVariable Long genreId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0")Long movieId,
+            @PathVariable @Positive(message = "Genre ID must be greater than 0") Long genreId) {
         movieService.removeGenreFromMovie(movieId, genreId);
     }
 
@@ -157,8 +169,8 @@ public class MovieController {
     @PutMapping("/{movieId}/actors/{actorsId}")
     @ResponseStatus(HttpStatus.OK)
     public Movie assignActorToMovie(
-            @PathVariable Long movieId,
-            @PathVariable Long actorsId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0") Long movieId,
+            @PathVariable @Positive(message = "Actor ID must be greater than 0") Long actorsId) {
         return movieService.assignActorToMovie(movieId, actorsId);
     }
 
@@ -166,8 +178,8 @@ public class MovieController {
     @DeleteMapping("/{movieId}/actors/{actorsId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeActorFromMovie(
-            @PathVariable Long movieId,
-            @PathVariable Long actorsId) {
+            @PathVariable @Positive(message = "Movie ID must be greater than 0") Long movieId,
+            @PathVariable @Positive(message = "Actor ID must be greater than 0") Long actorsId) {
         movieService.removeActorFromMovie(movieId, actorsId);
     }
 }

@@ -27,4 +27,5 @@ public class DatabaseConfig {
         dataSource.setPassword(env.getProperty("spring.datasource.password"));
         return dataSource;
     }
+
 }

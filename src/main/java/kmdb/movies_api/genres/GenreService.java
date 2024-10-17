@@ -1,10 +1,11 @@
 package kmdb.movies_api.genres;
 
 import jakarta.transaction.Transactional;
-import kmdb.movies_api.exception.ResourceAlreadyExistsException;
-import kmdb.movies_api.exception.ResourceNotFoundException;
+import kmdb.movies_api.exceptions.ResourceAlreadyExistsException;
+import kmdb.movies_api.exceptions.ResourceNotFoundException;
 import kmdb.movies_api.movies.Movie;
 import kmdb.movies_api.movies.MovieRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,9 +23,19 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
 
+    @Autowired
     public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
         this.genreRepository = genreRepository;
         this.movieRepository = movieRepository;
+    }
+
+    // get all genres
+    public Optional<List<Genre>> getAllGenres() {
+        List<Genre> genreList = genreRepository.findAll();
+        if (genreList.isEmpty()) {
+            throw new ResourceNotFoundException("No genres found in the database");
+        }
+        return Optional.of(genreList);
     }
 
     // get number of genres
@@ -34,6 +45,9 @@ public class GenreService {
 
     // get genres by page and page size
     public Optional<List<Genre>> getGenresByPage(int page, int size) {
+        if (size > 100) {
+            throw new IllegalArgumentException("Page size must be less than or equal to 100");
+        }
         PageRequest pageable = PageRequest.of(page, size);
         Page<Genre> genresPage = genreRepository.findAll(pageable);
         List<Genre> genresList = genresPage.getContent();

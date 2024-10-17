@@ -1,4 +1,4 @@
-package kmdb.movies_api.exception;
+package kmdb.movies_api.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(methodArgumentNotValidException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
+
     @ExceptionHandler(ConstraintViolationException.class) // handle ConstraintViolationException
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiException> handleConstraintViolationException(ConstraintViolationException exception) {
@@ -64,7 +65,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(illegalArgumentException, HttpStatus.BAD_REQUEST); // Return response with status code
     }
 
-    @ExceptionHandler(IllegalStateException.class) // handle IllegalArgumentException
+    @ExceptionHandler(IllegalStateException.class) // handle IllegalStateException
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiException> handleIllegalStateException(IllegalStateException exception) {
         ArrayList<String> errors = new ArrayList<>();

@@ -1,4 +1,4 @@
-package kmdb.movies_api.exception;
+package kmdb.movies_api.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

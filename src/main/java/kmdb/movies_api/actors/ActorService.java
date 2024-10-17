@@ -1,10 +1,11 @@
 package kmdb.movies_api.actors;
 
 import jakarta.transaction.Transactional;
-import kmdb.movies_api.exception.ResourceAlreadyExistsException;
-import kmdb.movies_api.exception.ResourceNotFoundException;
+import kmdb.movies_api.exceptions.ResourceAlreadyExistsException;
+import kmdb.movies_api.exceptions.ResourceNotFoundException;
 import kmdb.movies_api.movies.Movie;
 import kmdb.movies_api.movies.MovieRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,11 +23,20 @@ public class ActorService {
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
 
+    @Autowired
     public ActorService(ActorRepository actorRepository, MovieRepository movieRepository) {
         this.actorRepository = actorRepository;
         this.movieRepository = movieRepository;
     }
 
+    // get all actors
+    public Optional<List<Actor>> getAllActors() {
+        List<Actor> actorsList = actorRepository.findAll();
+        if (actorsList.isEmpty()) {
+            throw new ResourceNotFoundException("No actors found in the database");
+        }
+        return Optional.of(actorsList);
+    }
 
     // get number of actors
     public String getActorCount() {
@@ -35,6 +45,9 @@ public class ActorService {
 
     // get all the actors or actors by page number and size
     public Optional<List<Actor>> getActorsByPage(int page, int size) {
+        if (size > 100) {
+            throw new IllegalArgumentException("Page size must be less than or equal to 100");
+        }
         PageRequest pageable = PageRequest.of(page, size);
         Page<Actor> actorsPage = actorRepository.findAll(pageable);
         List<Actor> actorsList = actorsPage.getContent();

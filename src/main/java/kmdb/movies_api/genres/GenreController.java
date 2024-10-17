@@ -1,21 +1,35 @@
 package kmdb.movies_api.genres;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Validated
 @RequestMapping(path = "api/genres")
 public class GenreController {
 
     private final GenreService genreService;
 
+    @Autowired
     public GenreController(GenreService genreService) {
         this.genreService = genreService;
+    }
+
+    // get all genres
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Optional<List<Genre>> getAllGenres() {
+        return genreService.getAllGenres();
     }
 
     // get number of genres
@@ -29,7 +43,11 @@ public class GenreController {
     @GetMapping(params = { "page", "size"})
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Genre>> getGenresByPage(
+            @Min(value = 0, message = "Page index must not be less than zero")
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+
+            @Min(value = 0, message = "Page size must not be less than one")
+            @Max(value = 100, message = "Page size limit is 100")
             @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         return genreService.getGenresByPage(page, size);
     }
@@ -38,12 +56,12 @@ public class GenreController {
     @GetMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.OK)
     public Optional<Genre> getGenreById(
-            @PathVariable Long genreId) {
+            @PathVariable @Positive(message = "Genre ID must be greater than 0") Long genreId) {
         return genreService.getGenreById(genreId);
     }
 
     //retrieve data by name or retrieve all if a parameter isn't given
-    @GetMapping
+    @GetMapping(path = "/search")
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Genre>> findGenresByName(@RequestParam(required = false) String name) {
         return genreService.findGenresByName(name);
@@ -59,7 +77,7 @@ public class GenreController {
     @DeleteMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGenre(
-            @PathVariable("genreId") Long genreId,
+            @PathVariable("genreId") @Positive(message = "Genre ID must be greater than 0") Long genreId,
             @RequestParam(value = "force", defaultValue = "false", required = false) boolean force) {
         genreService.deleteGenre(genreId, force);
     }
@@ -68,7 +86,7 @@ public class GenreController {
     @PatchMapping(path = "{genreId}")
     @ResponseStatus(HttpStatus.OK)
     public void updateGenre(
-            @PathVariable("genreId") Long genreId,
+            @PathVariable("genreId") @Positive(message = "Genre ID must be greater than 0") Long genreId,
             @Valid @RequestBody Genre request) {
         genreService.updateGenre(genreId, request.getName());
     }

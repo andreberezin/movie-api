@@ -3,10 +3,11 @@ package kmdb.movies_api.movies;
 import jakarta.transaction.Transactional;
 import kmdb.movies_api.actors.Actor;
 import kmdb.movies_api.actors.ActorRepository;
-import kmdb.movies_api.exception.ResourceAlreadyExistsException;
-import kmdb.movies_api.exception.ResourceNotFoundException;
+import kmdb.movies_api.exceptions.ResourceAlreadyExistsException;
+import kmdb.movies_api.exceptions.ResourceNotFoundException;
 import kmdb.movies_api.genres.Genre;
 import kmdb.movies_api.genres.GenreRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,10 +27,20 @@ public class MovieService {
     private final GenreRepository genreRepository;
     private final ActorRepository actorRepository;
 
+    @Autowired
     public MovieService(MovieRepository movieRepository, GenreRepository genreRepository, ActorRepository actorRepository) {
         this.movieRepository = movieRepository;
         this.genreRepository = genreRepository;
         this.actorRepository = actorRepository;
+    }
+
+    // get all movies
+    public Optional<List<Movie>> getAllMovies() {
+        List<Movie> moviesList = movieRepository.findAll();
+        if (moviesList.isEmpty()) {
+            throw new ResourceNotFoundException("No movies found in the database");
+        }
+        return Optional.of(moviesList);
     }
 
     // get number of movies
@@ -39,6 +50,9 @@ public class MovieService {
 
     // get movies by page and page size
     public Optional<List<Movie>> getMoviesByPage(int page, int size) {
+        if (size > 100) {
+            throw new IllegalArgumentException("Page size must be less than or equal to 100");
+        }
         PageRequest pageable = PageRequest.of(page, size);
         Page<Movie> moviesPage = movieRepository.findAll(pageable);
         List<Movie> moviesList = moviesPage.getContent();
@@ -67,9 +81,9 @@ public class MovieService {
 
     // get movies by id
     public Optional<Movie> getMovieById(Long movieId) {
-        if (movieId < 1) {
+/*        if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
-        }
+        }*/
 
         Optional<Movie> movie= movieRepository.findById(movieId);
         if (movie.isPresent()) {
@@ -161,16 +175,36 @@ public class MovieService {
         return new ResponseEntity<>("Movie '" + movie.getTitle() + "' added successfully", HttpStatus.CREATED);
     }
 
-    // delete movie
-    public void deleteMovie(Long movieId) {
+
+    public void deleteMovie(Long movieId, boolean force) {
         if (movieId < 1) {
             throw new IllegalArgumentException("Movie ID must be greater than 0");
         }
-        movieRepository.findById(movieId)
+        Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
-        movieRepository.deleteById(movieId);
+        if (force) { // if force is true then delete resource regardless of relationships
+            movieRepository.deleteById(movieId);
+            return;
+        }
+
+        int numOfActors = movie.getActors().size();
+        int numOfGenres = movie.getGenres().size();
+
+        if (numOfActors > 0 && numOfGenres > 0) { // if force is false and relationships exist then return exception
+            throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfGenres + " genre(s) and " + +  numOfActors + " actor(s)"));
+        }
+        if (numOfActors > 0 && numOfGenres == 0) { // if force is false and relationships exist then return exception
+            throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfActors + " actor(s)"));
+        }
+        if (numOfActors == 0 && numOfGenres > 0) { // if force is false and relationships exist then return exception
+            throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfGenres + " genre(s)"));
+        }
+
+        movieRepository.deleteById(movieId); // if force is false and relationships do not exist then delete resource
+
     }
+
 
     // update movie
     @Transactional
@@ -207,11 +241,15 @@ public class MovieService {
         if (!genres.isEmpty()) {
             movie.getGenres().retainAll(genres); // remove genres not in the new list
             movie.getGenres().addAll(genres); // add genres in the new list
+        } else {
+            movie.setGenres(genres); // assign genres directly
         }
 
         if (!actors.isEmpty()) {
             movie.getActors().retainAll(actors); // remove actors not in the new list
             movie.getActors().addAll(actors); // add actors in the new list
+        } else {
+            movie.setActors(actors); // assign actors directly
         }
     }
 

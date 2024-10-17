@@ -40,7 +40,7 @@ public class Movie {
 
     // ManyToMany mapping between movies and actors
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable (
             name = "actors",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -50,7 +50,7 @@ public class Movie {
 
     // ManyToMany mapping between movies and genres
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable (
             name = "genres",
             joinColumns = @JoinColumn(name = "movie_id"),

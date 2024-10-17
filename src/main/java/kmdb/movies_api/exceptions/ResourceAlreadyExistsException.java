@@ -1,4 +1,4 @@
-package kmdb.movies_api.exception;
+package kmdb.movies_api.exceptions;
 
 public class ResourceAlreadyExistsException extends RuntimeException {
 
