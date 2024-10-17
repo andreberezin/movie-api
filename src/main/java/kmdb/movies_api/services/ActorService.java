@@ -7,6 +7,7 @@ import kmdb.movies_api.exceptions.ResourceNotFoundException;
 import kmdb.movies_api.entities.Movie;
 import kmdb.movies_api.repositories.MovieRepository;
 import kmdb.movies_api.repositories.ActorRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,16 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ActorService {
 
     private final ActorRepository actorRepository;
     private final MovieRepository movieRepository;
-
-    @Autowired
-    public ActorService(ActorRepository actorRepository, MovieRepository movieRepository) {
-        this.actorRepository = actorRepository;
-        this.movieRepository = movieRepository;
-    }
 
     // get all actors
     public Optional<List<Actor>> getAllActors() {

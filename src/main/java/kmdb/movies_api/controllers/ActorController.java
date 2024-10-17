@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import kmdb.movies_api.services.ActorService;
 import kmdb.movies_api.entities.Actor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,11 @@ import java.util.Optional;
 
 @RestController
 @Validated
+@AllArgsConstructor
 @RequestMapping(path = "api/actors")
 public class ActorController {
 
     private final ActorService actorService;
-
-    @Autowired
-    public ActorController(ActorService actorService) {
-        this.actorService = actorService;
-    }
 
     // get all actors
     @GetMapping

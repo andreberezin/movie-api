@@ -10,6 +10,7 @@ import kmdb.movies_api.services.MovieService;
 import kmdb.movies_api.services.ActorService;
 import kmdb.movies_api.entities.Genre;
 import kmdb.movies_api.services.GenreService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +23,13 @@ import java.util.Set;
 
 @RestController
 @Validated
+@AllArgsConstructor
 @RequestMapping(path = "api/movies")
 public class MovieController {
 
     private final MovieService movieService;
     private final ActorService actorService;
     private final GenreService genreService;
-
-   @Autowired
-    public MovieController(MovieService movieService, ActorService actorService, GenreService genreService) {
-        this.movieService = movieService;
-        this.actorService = actorService;
-        this.genreService = genreService;
-    }
 
     // get all movies
     @GetMapping
