@@ -11,7 +11,7 @@ This project is a RESTful API for managing a movie database. It allows users to 
    * In case "command not found: mvn" \
        install Maven: https://maven.apache.org/install.html \
        or on MacOs/Linux use brew for installation: `brew install maven`
-4. Ensure you have Java 17 installed. You can check the version with: `java -version`
+4. Ensure you have Java 21 installed. You can check the version with: `java -version`
    * * If you don't have Java 21 installed, download and install it from: https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html
 5. Run the application: `java -jar target/movies_api-0.0.1.jar`
 6. End the application: `pkill -f movies_api-0.0.1.jar`
