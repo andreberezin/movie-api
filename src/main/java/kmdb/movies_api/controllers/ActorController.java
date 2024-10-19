@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Positive;
 import kmdb.movies_api.services.ActorService;
 import kmdb.movies_api.entities.Actor;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

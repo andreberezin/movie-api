@@ -11,7 +11,6 @@ import kmdb.movies_api.services.ActorService;
 import kmdb.movies_api.entities.Genre;
 import kmdb.movies_api.services.GenreService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -63,6 +62,8 @@ public class MovieController {
     @ResponseStatus(HttpStatus.OK)
     public Optional<List<Movie>> getMoviesByReleaseYear(
             @RequestParam(value = "releaseYear", defaultValue = "", required = false)
+            @Min(value = 0, message = "Movie release year must be between 0 and 2300")
+            @Max(value = 2300, message = "Movie release year must be between 0 and 2300")
             int releaseYear) {
         return movieService.getMoviesByReleaseYear(releaseYear);
     }

@@ -8,7 +8,6 @@ import kmdb.movies_api.entities.Movie;
 import kmdb.movies_api.repositories.MovieRepository;
 import kmdb.movies_api.repositories.GenreRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -44,9 +43,6 @@ public class GenreService {
 
     // get genres by page and page size
     public Optional<List<Genre>> getGenresByPage(int page, int size) {
-        if (size > 100) {
-            throw new IllegalArgumentException("Page size must be less than or equal to 100");
-        }
         PageRequest pageable = PageRequest.of(page, size);
         Page<Genre> genresPage = genreRepository.findAll(pageable);
         List<Genre> genresList = genresPage.getContent();
@@ -58,9 +54,6 @@ public class GenreService {
 
     // get genre by id
     public Optional<Genre> getGenreById(Long genreId) {
-        if (genreId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
         Optional<Genre> genre = genreRepository.findById(genreId);
         if (genre.isPresent()) {
             return genre;
@@ -93,10 +86,6 @@ public class GenreService {
 
     // filter movies by genre
     public Optional<List<Movie>> getMoviesByGenre(Long genreId) {
-        if (genreId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
-
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
 
@@ -120,18 +109,16 @@ public class GenreService {
     }
 
     // delete a genre
+    @Transactional
     public void deleteGenre(Long genreId, boolean force) {
-        if (genreId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Genre with ID " + genreId + " does not exist"));
 
         int NumOfMovies = genre.getMovies().size();
 
-
         if (force) { // if force is true then remove all relationships and delete resource
             genreRepository.deleteById(genreId);
+            return;
         }
 
             if (NumOfMovies > 0) { // if force is false and relationships exist then return exception
@@ -147,9 +134,6 @@ public class GenreService {
     // update genre
     @Transactional
     public void updateGenre(Long genreId, String name) {
-        if (genreId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Genre with ID " + genreId + " does not exist in database"

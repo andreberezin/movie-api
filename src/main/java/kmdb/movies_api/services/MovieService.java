@@ -10,7 +10,6 @@ import kmdb.movies_api.entities.Genre;
 import kmdb.movies_api.repositories.GenreRepository;
 import kmdb.movies_api.repositories.MovieRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,9 +46,6 @@ public class MovieService {
 
     // get movies by page and page size
     public Optional<List<Movie>> getMoviesByPage(int page, int size) {
-        if (size > 100) {
-            throw new IllegalArgumentException("Page size must be less than or equal to 100");
-        }
         PageRequest pageable = PageRequest.of(page, size);
         Page<Movie> moviesPage = movieRepository.findAll(pageable);
         List<Movie> moviesList = moviesPage.getContent();
@@ -62,10 +58,6 @@ public class MovieService {
 
     // get movies by release year
     public Optional<List<Movie>> getMoviesByReleaseYear(int releaseYear) {
-        if (releaseYear < 0 || releaseYear > 2300) {
-            throw new IllegalArgumentException("Release year must be between 0 and 2300");
-        }
-
         List<Movie> moviesList = movieRepository.findAll();
 
         return Optional.ofNullable(Optional.of(moviesList.stream()
@@ -78,10 +70,6 @@ public class MovieService {
 
     // get movies by id
     public Optional<Movie> getMovieById(Long movieId) {
-/*        if (movieId < 1) {
-            throw new IllegalArgumentException("Movie ID must be greater than 0");
-        }*/
-
         Optional<Movie> movie= movieRepository.findById(movieId);
         if (movie.isPresent()) {
             return movie;
@@ -114,10 +102,6 @@ public class MovieService {
 
     // finds actors associated to movie
     public Optional<Set<Actor>> getActorsInMovie(Long movieId) {
-        if (movieId < 1) {
-            throw new IllegalArgumentException("Movie ID must be greater than 0");
-        }
-
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
@@ -131,10 +115,6 @@ public class MovieService {
 
     // finds genres associated to movie
     public Optional<Set<Genre>> getGenresInMovie(Long movieId) {
-        if (movieId < 1) {
-            throw new IllegalArgumentException("Movie ID must be greater than 0");
-        }
-
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
@@ -173,10 +153,8 @@ public class MovieService {
     }
 
 
+    @Transactional
     public void deleteMovie(Long movieId, boolean force) {
-        if (movieId < 1) {
-            throw new IllegalArgumentException("Movie ID must be greater than 0");
-        }
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist"));
 
@@ -189,12 +167,12 @@ public class MovieService {
         int numOfGenres = movie.getGenres().size();
 
         if (numOfActors > 0 && numOfGenres > 0) { // if force is false and relationships exist then return exception
-            throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfGenres + " genre(s) and " + +  numOfActors + " actor(s)"));
+            throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfGenres + " genre(s) and " +  numOfActors + " actor(s)"));
         }
-        if (numOfActors > 0 && numOfGenres == 0) { // if force is false and relationships exist then return exception
+        if (numOfActors > 0) { // if force is false and relationships exist then return exception
             throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfActors + " actor(s)"));
         }
-        if (numOfActors == 0 && numOfGenres > 0) { // if force is false and relationships exist then return exception
+        if (numOfGenres > 0) { // if force is false and relationships exist then return exception
             throw new IllegalStateException(("Cannot delete movie '" + movie.getTitle() + "' because they are associated with " + numOfGenres + " genre(s)"));
         }
 
@@ -206,10 +184,6 @@ public class MovieService {
     // update movie
     @Transactional
     public void updateMovie(Long movieId, String title, int releaseYear, int duration, Set<Genre> genres, Set<Actor> actors ) {
-        if (movieId < 1) {
-            throw new IllegalArgumentException("Movie ID must be greater than 0");
-        }
-
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new ResourceNotFoundException("Movie with ID " + movieId + " does not exist in database"));
 

@@ -8,7 +8,6 @@ import kmdb.movies_api.entities.Movie;
 import kmdb.movies_api.repositories.MovieRepository;
 import kmdb.movies_api.repositories.ActorRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -43,9 +42,6 @@ public class ActorService {
 
     // get all the actors or actors by page number and size
     public Optional<List<Actor>> getActorsByPage(int page, int size) {
-        if (size > 100) {
-            throw new IllegalArgumentException("Page size must be less than or equal to 100");
-        }
         PageRequest pageable = PageRequest.of(page, size);
         Page<Actor> actorsPage = actorRepository.findAll(pageable);
         List<Actor> actorsList = actorsPage.getContent();
@@ -58,9 +54,6 @@ public class ActorService {
 
     // get actors by id
     public Optional<Actor> getActorById(Long actorId) {
-        if (actorId < 1) {
-            throw new IllegalArgumentException("Actor ID must be greater than 0");
-        }
         Optional<Actor> actor = actorRepository.findById(actorId);
         if (actor.isPresent()) {
             return actor;
@@ -94,10 +87,6 @@ public class ActorService {
 
     // filter movies by actor
     public Optional<List<Movie>> getMoviesByActor(Long actorId) {
-        if (actorId < 1) {
-            throw new IllegalArgumentException("Genre ID must be greater than 0");
-        }
-
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
 
@@ -111,6 +100,7 @@ public class ActorService {
     }
 
     // add actor
+
     public ResponseEntity<String> addActor(Actor actor) {
         Optional<Actor> actorOptional = actorRepository
                 .findByName(actor.getName());
@@ -124,10 +114,8 @@ public class ActorService {
     }
 
     // remove actor
+    @Transactional
     public void deleteActor(Long actorId, boolean force) {
-        if (actorId < 1) {
-            throw new IllegalArgumentException("Actor ID must be greater than 0");
-        }
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
 
@@ -135,6 +123,7 @@ public class ActorService {
 
         if (force) { // if force is true then delete resource regardless of relationships
             actorRepository.deleteById(actorId);
+            return;
         }
 
         if (numOfMovies > 0) { // if force is false and relationships exist then return exception
@@ -150,9 +139,6 @@ public class ActorService {
     // update actor
     @Transactional
     public void updateActor(Long actorId, String name, String birthDate) {
-        if (actorId < 1) {
-            throw new IllegalArgumentException("Actor ID must be greater than 0");
-        }
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Actor with ID " + actorId + " does not exist"));
 
