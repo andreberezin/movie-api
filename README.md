@@ -34,7 +34,7 @@ This project is a RESTful API for managing a movie database. It allows users to 
 
 ## 3. Usage Guide
 * To test the API, you can use the provided Postman workspace: \
-    https://www.postman.com/andreberezin/kmdb/collection/6vs7gbp/movie-database-api?action=share&creator=38674842 \
+  https://www.postman.com/match-me/workspace/kmdb/collection/38674842-233503d6-ee4e-4be3-9b25-2dbbb2e985c1?action=share&creator=38674842 \
     The workspace contains collections for testing different endpoints, such as creating, reading, updating, and deleting movies, actors, and genres.
   &nbsp;
 
