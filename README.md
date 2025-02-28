@@ -5,16 +5,32 @@
 This project is a RESTful API for managing a movie database. It allows users to perform CRUD operations on movies, actors, and genres. The API is built using Spring Boot and uses a SQLite database for storing the data.
 
 ## 2. Setup and Installation Instructions
-1. Clone the repository: `git clone https://gitea.kood.tech/andreberezin/kmdb.git`
-2. Navigate to the project directory using `cd` 
-3. Build the application with all dependencies: `mvn package`
+1. Clone the repository: 
+```bash
+  git clone https://github.com/andreberezin/movie-api.git
+```
+2. Navigate to the project directory using 
+```bash 
+  cd
+``` 
+3. Build the application with all dependencies: 
+```bash
+    mvn package
+```
    * In case "command not found: mvn" \
        install Maven: https://maven.apache.org/install.html \
        or on MacOs/Linux use brew for installation: `brew install maven`
 4. Ensure you have Java 21 installed. You can check the version with: `java -version`
-   * * If you don't have Java 21 installed, download and install it from: https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html
-5. Run the application: `java -jar target/movies_api-0.0.1.jar`
-6. End the application: `pkill -f movies_api-0.0.1.jar`
+   * * If you don't have Java 21 installed, download and install it from: \
+   https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html
+5. Run the application: 
+```bash
+  java -jar target/movies_api-0.0.1.jar
+```
+6. End the application: 
+```bash
+  pkill -f movies_api-0.0.1.jar
+```
 
 ## 3. Usage Guide
 * To test the API, you can use the provided Postman workspace: \
